@@ -42,14 +42,12 @@ composite <- rbind(compositeE, compositeA)
 #tax file
 taxonomy <- composite %>%
   select("ASVs", "Kingdom", "Phylum", "Class", "Order", "Family", "Genus") %>%
-  rename_all(tolower) %>%
-  mutate(taxon = genus)
+  rename_all(tolower)
 
-col <- 7
-for(i in 1:nrow(taxonomy)) {
-  taxonomy[i,8] <- taxonomy[i, col]
-}
-taxonomy <- taxonomy[!(taxonomy$taxon %in% NA),] %>%
+taxonomy <- taxonomy[!(taxonomy$genus %in% NA),]
+taxonomy <- taxonomy[!duplicated(taxonomy), ]
+taxonomy <- taxonomy %>% mutate(rownumber = 1:nrow(taxonomy),
+                                taxon=glue("{genus} (ASV {rownumber})")) %>%
   select(asvs, taxon)
 
 ## dli analysis -> significantly different

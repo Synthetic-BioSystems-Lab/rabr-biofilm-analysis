@@ -1,6 +1,7 @@
 library(tidyverse) 
 library(vegan)
 library(ggtext)
+library(readxl)
 
 set.seed(1111)
 setwd("~/Miller Lab/Rscripts_PilotRABR/DADA2/23SDADA2visualization")
@@ -104,7 +105,7 @@ prep_rarecurve %>%
   geom_line() + geom_point(size=1) +
   theme_classic() +
   scale_y_continuous(expand=c(0,0)) +
-  labs(x="Number of Sequences", y="Number of OTUs", 
+  labs(x="Number of Sequences", y="Number of ASVs", 
        title="Rarefaction Curves for All Samples") +
   theme(plot.title=element_text(hjust=0.5),
         legend.text = element_markdown(),

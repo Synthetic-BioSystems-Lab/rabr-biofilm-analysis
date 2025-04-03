@@ -57,7 +57,7 @@ trimmed_composite <- composite[!(composite$count=="0"),] %>%
 otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='sample'))
 
 taxon_rel_abund <- otu_rel_abund %>%
-  filter(level=="phylum") %>%
+  filter(level=="genus") %>%
   group_by(section, sample_id, taxon, date, label) %>%
   summarize(rel_abund = 100*sum(rel_abund), .groups = "drop") %>%
   # group_by(sample_id, taxon, section) %>%
@@ -70,7 +70,7 @@ taxon_pool <- taxon_rel_abund %>%
   group_by(section, taxon, rel_abund) %>%
   summarize(mean=mean(rel_abund), .groups="drop") %>%
   group_by(taxon) %>%
-  summarize(pool = max(mean) < 18.8, 
+  summarize(pool = max(mean) < 20, 
             mean = mean(mean),
             .groups="drop")
 
@@ -118,7 +118,7 @@ prep %>%
   scale_y_continuous(expand=c(0,0)) +
   facet_grid(~section, scale="free_x", space="free", 
              labeller = labeller(section=pretty)) +
-  labs(title="Phylum Relative Abundance of RABRs",
+  labs(title="Genus Relative Abundance of RABRs",
        x = NULL,
        y = "Mean Relative Abundance (%)") +
   theme_classic() +
@@ -129,7 +129,7 @@ prep %>%
         strip.background = element_blank(),
         strip.text = element_markdown())
 
-ggsave("16Spilot/16Splots/16S_stacked_bar_phylum.tiff", width=9, height=4)
+ggsave("16Spilot/16Splots/16S_stacked_bar_genus.tiff", width=10, height=4)
 
 # Relative Abundance
 
@@ -152,7 +152,7 @@ prep %>%
                       low = "#FFFFFF", high = "#FF0000",
                       expand = c(0,0)) +
   #scale_y_continuous(expand=c(0,0)) + 
-  labs(title="Phylum Relative Abundance of RABRs",
+  labs(title="Genus Relative Abundance of RABRs",
        x=NULL,
        y=NULL) +
   facet_grid(~section, scale="free_x", space="free",  switch="x",
@@ -172,5 +172,5 @@ prep %>%
     strip.text = element_markdown())
 #coord_fixed(ratio = 4)
 
-ggsave("16Spilot/16Splots/16S_heat_map_phylum.tiff", width=9, height=4)
+ggsave("16Spilot/16Splots/16S_heat_map_genus.tiff", width=10, height=4)
 

@@ -1,6 +1,7 @@
 library(tidyverse) 
 library(ggplot2)
 library(ggtext)
+library(readxl)
 
 
 #relative abund stacked bar graph
@@ -57,15 +58,44 @@ all_metadata %>%
                           levels=c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")))
 
 #remove empty rows, add relative abundance, pivot for readability 
-trimmed_composite <- composite[!(composite$count=="0"),] %>% 
+mid_composite <- composite[!(composite$count=="0"),] %>% 
   group_by(sample_id) %>% 
   #relative abundance calculated here 
   mutate(rel_abund = count / sum(count)) %>% 
   mutate(sample_id = str_replace_all(sample_id, "-", "_")) %>%
-  ungroup() %>% 
+  ungroup() 
+
+col <- 10
+i = 1
+j = 5
+for(i in 1:nrow(mid_composite)) {
+  if(is.na(mid_composite[i, 4])) {
+    
+  } else{
+      for(j in 5:10){
+        if(is.na(mid_composite[i, j])){
+          prior <- mid_composite[i, j-1]
+          if(grepl('Unclassified', prior, fixed=TRUE)){
+            mid_composite[i,j] <- mid_composite[i, j-1]
+          } else{
+            prior <- paste("Unclassified ",prior, sep="")
+            mid_composite[i,j] <- prior
+          }
+        }
+      }
+  }
+}
+
+trimmed_composite <- mid_composite %>% 
   pivot_longer(cols = c("Kingdom", "Phylum", "Class",  
                         "Order", "Family", "Genus"),  
                names_to = "level", values_to = "taxon")
+
+for(i in 1:nrow(trimmed_composite)) {
+  if(is.na(trimmed_composite[i, 7])) {
+    trimmed_composite[i, 7] <- "Unclassified"
+  }
+}
 
 otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='sample'))
 
@@ -75,7 +105,7 @@ sample_order <- all_metadata %>%
   select(sample, order, date)
 
 taxon_rel_abund <- otu_rel_abund %>%
-  filter(level=="Phylum") %>%
+  filter(level=="Order") %>%
   group_by(section, sample_id, taxon, date, label) %>%
   summarize(rel_abund = 100*sum(rel_abund), .groups = "drop") %>%
   # group_by(sample_id, taxon, section) %>%
@@ -104,10 +134,10 @@ taxon_pool <- taxon_rel_abund %>%
 
 pretty <- c("pilot" = "Pilot-scale RABRs",
             "81RABR" = "Lab-scale RABRs",
-            "control" = "Control Samples",
+            "control" = "Control",
             "CVWRF" = "CVWRF",
             "GHR" = "GHR",
-            "TF" = "Trickling Filter RABR")
+            "TF" = "TF")
 #<br>
 
 #assemble others and make RA stacked bar plot
@@ -131,7 +161,7 @@ prep %>%
   scale_y_continuous(expand=c(0,0)) +
   facet_grid(~section, scale="free_x", space="free", 
              labeller = labeller(section=pretty)) +
-  labs(title="Phylum Relative Abundance of RABRs",
+  labs(title="Order Relative Abundance of RABRs",
        x = NULL,
        y = "Mean Relative Abundance (%)") +
   theme_classic() +
@@ -142,7 +172,7 @@ prep %>%
         strip.background = element_blank(),
         strip.text = element_markdown())
 
-ggsave("23S_D_plots/23SD_stacked_bar_phylum.tiff", width=9, height=4)
+ggsave("23S_D_plots/23SD_stacked_bar_order.tiff", width=13, height=4)
 
 # Relative Abundance
 
@@ -165,7 +195,7 @@ prep %>%
                       low = "#FFFFFF", high = "#FF0000",
                       expand = c(0,0)) +
   #scale_y_continuous(expand=c(0,0)) + 
-  labs(title="Phylum Relative Abundance of RABRs",
+  labs(title="Order Relative Abundance of RABRs",
        x=NULL,
        y=NULL) +
   facet_grid(~section, scale="free_x", space="free",  switch="x",
@@ -185,5 +215,5 @@ prep %>%
     strip.text = element_markdown())
 #coord_fixed(ratio = 4)
 
-ggsave("23S_D_plots/23SD_heat_map_phylum.tiff", width=9, height=4)
+ggsave("23S_D_plots/23SD_heat_map_order.tiff", width=13, height=4)
 

@@ -281,7 +281,7 @@ prod_meta_alpha1 <- inner_join(prod_metadata1, alpha_diversity,
 prod_meta_alpha1 %>%
   ggplot(aes(x=productivity, y=invsimpson)) +
   geom_point() + 
-  labs(x="Pilot RABR Productivity", y="Inverse Simpson") +
+  labs(x="Pilot RABR Productivity (g/m2/day)", y="Inverse Simpson") +
   ggtitle("Productivity vs Inverse Simpson") +
   theme_classic() +
   ylim(0, 20) +
@@ -298,7 +298,7 @@ prod_meta_alpha2 <- inner_join(prod_metadata2, alpha_diversity,
 prod_meta_alpha2 %>%
   ggplot(aes(x=productivity, y=invsimpson)) +
   geom_point() + 
-  labs(x="Lab RABR Productivity", y="Inverse Simpson") +
+  labs(x="Lab RABR Productivity (g/m2/day)", y="Inverse Simpson") +
   ggtitle("Productivity vs Inverse Simpson") +
   theme_classic() +
   ylim(0, 15) +
@@ -344,7 +344,7 @@ mod_date_meta_alpha %>%
   ylim(0, 20) +
   theme(plot.title=element_text(hjust=0.5),
         axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
-ggsave("18Spilotv2/18Splots/18S_alpha_div_timeline.tiff", width=3.5, height=2.3)
+ggsave("18Spilotv2/18Splots/18S_alpha_div_timeline.tiff", width=4, height=2.3)
 
 #productivity timeline
 date_productivity <- prod_meta_alpha1 %>%

@@ -42,14 +42,14 @@ composite <- rbind(compositeE, compositeA)
 #tax file
 taxonomy <- composite %>%
   select("ASVs", "Kingdom", "Phylum", "Class", "Order", "Family", "Genus") %>%
-  rename_all(tolower) %>%
-  mutate(taxon = genus)
-col <- 7
-for(i in 1:nrow(taxonomy)) {
-  taxonomy[i,8] <- taxonomy[i, col]
-}
-taxonomy <- taxonomy[!(taxonomy$taxon %in% NA),] %>%
+  rename_all(tolower)
+
+taxonomy <- taxonomy[!(taxonomy$genus %in% NA),]
+taxonomy <- taxonomy[!duplicated(taxonomy), ]
+taxonomy <- taxonomy %>% mutate(rownumber = 1:nrow(taxonomy),
+         taxon=glue("{genus} (ASV {rownumber})")) %>%
   select(asvs, taxon)
+
 
 ## dli analysis -> significantly different
 dli_metadata <- gather_metadata("dli_level", 1)
@@ -103,7 +103,7 @@ high_low %>%
 # high vs low
 read_tsv("DADA2/23SDADA2visualization/processed_data/23S.high_low.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 2) %>%
+  filter(LDA > 3) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "low", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -130,11 +130,11 @@ pilot_metadata <- dplyr::bind_rows(pilot_metadata, temp_metadata)
 pilot_metadata %>%
   mutate(section = factor(section,
                           levels=c("pilot", "81RABR")))
-shared <- asv_seqtabA %>%
+
+shared <- dplyr::bind_rows(asv_seqtabA, asv_seqtabE) %>%
   pivot_wider(names_from = ASVs, values_from = count, values_fill = 0) %>%
   mutate(sample_id = str_replace_all(sample_id, "-", "_"))%>%
-  rename("Group"="sample_id") %>%
-  dplyr::bind_rows(., shared)
+  rename("Group"="sample_id") 
 
 shared[is.na(shared)] <- 0
 
@@ -191,7 +191,7 @@ LabvPilot %>%
 # make plots
 bob <- read_tsv("DADA2/23SDADA2visualization/processed_data/23S.labvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 3.8) %>%
+  filter(LDA > 4) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "81RABR", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA))
@@ -199,7 +199,7 @@ bob <-bob[!duplicated(bob), ]
 # Lab v Pilot
 read_tsv("DADA2/23SDADA2visualization/processed_data/23S.labvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 3.8) %>%
+  filter(LDA > 4) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "81RABR", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -262,7 +262,7 @@ TFvPilot %>%
 # TF v Pilot
 read_tsv("DADA2/23SDADA2visualization/processed_data/23S.TFvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 3.5) %>%
+  filter(LDA > 3.6) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "TF", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA))  %>%

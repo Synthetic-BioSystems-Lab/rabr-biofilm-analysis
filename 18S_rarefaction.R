@@ -1,6 +1,7 @@
 library(tidyverse) 
 library(vegan)
 library(ggtext)
+library(readxl)
 
 set.seed(1111)
 setwd("~/Miller Lab/Rscripts_PilotRABR")
@@ -17,8 +18,7 @@ loc_shared <- shared %>%
   mutate(total=sum(value)) %>% 
   filter(total != 0) %>%
   ungroup() %>%
-  select(-total) %>%
-  filter(Group != "C1_18S" & Group != "C2_18S")
+  select(-total)
 
 loc_shared_df <- loc_shared %>%
   pivot_wider(names_from="name", values_from="value", values_fill = 0) %>%
@@ -89,7 +89,7 @@ prep_rarecurve %>%
   geom_line() + geom_point(size=1) +
   theme_classic() +
   scale_y_continuous(expand=c(0,0)) +
-  labs(x="Number of Sequences", y="Number of OTUs", 
+  labs(x="Number of Sequences", y="Number of ASVs", 
        title="Rarefaction Curves for All Samples") +
   theme(plot.title=element_text(hjust=0.5),
         legend.text = element_markdown(),

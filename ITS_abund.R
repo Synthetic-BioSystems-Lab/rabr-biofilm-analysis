@@ -120,7 +120,7 @@ abund <- function(name, Tlevel) {
           strip.background = element_blank(),
           strip.text = element_markdown())
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_stacked_bar_", Tlevel, ".tiff", sep=""), width=9, height=4)
+  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_stacked_bar_", Tlevel, ".tiff", sep=""), width=11, height=4)
   
   # Relative Abundance
   
@@ -155,7 +155,7 @@ abund <- function(name, Tlevel) {
       strip.background = element_blank(),
       strip.text = element_markdown())
     
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_heat_map_", Tlevel, ".tiff", sep=""), width=9, height=4)
+  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_heat_map_", Tlevel, ".tiff", sep=""), width=11, height=4)
 
 }
 

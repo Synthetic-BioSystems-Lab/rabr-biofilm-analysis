@@ -2,6 +2,8 @@ library(tidyverse)
 library(ggplot2)
 library(ggtext)
 library(readxl)
+library(NLP)
+library(ggpubr)
 
 
 setwd("~/Miller Lab/Rscripts_PilotRABR")
@@ -310,11 +312,13 @@ alpha_div <- function(name) {
   prod_meta_alpha1 %>%
     ggplot(aes(x=productivity, y=invsimpson)) +
     geom_point() + 
-    labs(x="Pilot RABR Productivity", y="Inverse Simpson") +
+    labs(x="Pilot RABR Productivity (g/m2/day)", y="Inverse Simpson") +
     ggtitle("Productivity vs Inverse Simpson") +
     theme_classic() +
     ylim(0, 20) +
-    theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
+    theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
+    stat_cor()+
+    geom_smooth(method=lm, se=FALSE)
   ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_vPilot_Productivity.tiff", sep=""), width=3.5, height=2.3)
   
   #lab rabr productivity v invsimpson
@@ -324,12 +328,14 @@ alpha_div <- function(name) {
   prod_meta_alpha2 %>%
     ggplot(aes(x=productivity, y=invsimpson)) +
     geom_point() + 
-    labs(x="Lab RABR Productivity", y="Inverse Simpson") +
+    labs(x="Lab RABR Productivity (g/m2/day)", y="Inverse Simpson") +
     ggtitle("Productivity vs Inverse Simpson") +
     theme_classic() +
     ylim(0, 15) +
     xlim(0, 15) +
-    theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
+    theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
+    stat_cor()+
+    geom_smooth(method=lm, se=FALSE)
   ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_v81RABR_Productivity.tiff", sep=""), width=3.5, height=2.3)
   
   # pilot RABR date productivity
@@ -369,7 +375,7 @@ alpha_div <- function(name) {
     ylim(0, 20) +
     theme(plot.title=element_text(hjust=0.5),
           axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_timeline.tiff", sep=""), width=3.5, height=2.3)
+  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_timeline.tiff", sep=""), width=4, height=2.3)
   
 }
 # Div vs Light?
