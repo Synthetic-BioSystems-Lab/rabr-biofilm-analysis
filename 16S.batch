@@ -1,0 +1,110 @@
+#make initial file 
+make.file(inputdir=., type = fastq, prefix=16S) 
+# combine the forward and reverse reads 
+make.contigs(file=16S.files, maxambig=0, maxlength=475, maxhomop=8) 
+summary.seqs(fasta=current, count=current) 
+ 
+# remove duplicate sequences 
+unique.seqs(fasta=current, count=current) 
+summary.seqs(fasta=current, count=current) 
+ 
+# customize reference alignment 
+pcr.seqs(fasta=silva.nr_v132.align, oligos=16S.oligos, keepdots=T, pdiffs=3, rdiffs=3) 
+summary.seqs(fasta=current) 
+ 
+# output file: start=6451, end=28450 (use in screen.seqs) → all sequences removed 
+ 
+# align sequences to reference alignment 
+align.seqs(fasta=16S.trim.contigs.unique.fasta, reference=silva.nr_v132.pcr.align) 
+summary.seqs(fasta=current, count=current) 
+ 
+# screen sequences 
+# input fasta file = 16S.trim.contigs.unique.align 
+# input count file = 16S.trim.contigs.count_table 
+screen.seqs(fasta=current, count=current, mirnlength=400) 
+summary.seqs(fasta=current, count=current) 
+# 
+# # filter sequences to remove overhangs 
+filter.seqs(fasta=current, vertical=T, trump=.) 
+summary.seqs(fasta=current, count=current) 
+# 
+# # remove redundancies generated through trimming 
+unique.seqs(fasta=current, count=current) 
+summary.seqs(fasta=current, count=current) 
+# 
+# # split sequences into groups and sort them by abundance 
+pre.cluster(fasta=current, count=current, diffs=3) 
+# 
+# # remove chimeras 
+chimera.vsearch(fasta=current, count=current, dereplicate=T) 
+summary.seqs(fasta=current, count=current) 
+# 
+# # get missing sequences              
+list.seqs(fasta=silva.nr_v132.pcr.align) 
+get.seqs(taxonomy=silva.nr_v132.tax, accnos=current) 
+# Classify sequences 
+classify.seqs(fasta=16S.trim.contigs.unique.good.filter.unique.precluster.denovo.vsearch.fasta, count=16S.trim.contigs.unique.good.filter.unique.precluster.denovo.vsearch.count_table, reference=silva.nr_v132.pcr.align, taxonomy=silva.nr_v132.pick.tax, cutoff=80) 
+ 
+# # summarize taxonomy data 
+summary.tax(taxonomy=current, count=current) 
+# 
+# # rename files 
+rename.file(fasta=current, count=current, taxonomy=current, prefix=final) 
+# 
+ 
+# ## Analyze sequences 
+ 
+dist.seqs(fasta=current, cutoff=0.03) 
+ 
+# # Cluster sequences into OTUs 
+cluster(column=final.dist, count=final.count_table, cutoff=0.03) 
+ 
+## TESTING 
+ 
+# # Find how many sequences are in each OTU 
+make.shared(list=current, count=final.count_table, label=0.03) 
+# 
+summary.single(shared=final.opti_mcc.shared, calc=nseqs-coverage-sobs-invsimpson, subsample=T) 
+ 
+# # Get taxonomy and relative abundance for each OTU 
+classify.otu(list=current, count=final.count_table, taxonomy=final.taxonomy, relabund=T, label=0.03) 
+ 
+#*********************************************************************************************************** 
+ 
+# output file will have col1=OTU, col2=#OTUs, col3=taxa 
+# bin sequences into phylotypes according to their taxonoic classification 
+#phylotype(taxonomy=final.taxonomy) 
+# generate phylum-level shared file with otus 
+#make.shared(list=final.tx.list, count=final.count_table, label=5) 
+#classify.otu(list=final.tx.list, count=final.count_table, taxonomy=final.taxonomy, label=5) 
+#generate genus-level shared file 
+#make.shared(list=final.tx.list, count=final.count_table, label=1) 
+#classify.otu(list=final.tx1.tx.list, count=final.count_table, taxonomy=final.taxonomy, label=1) 
+#phylogenetic tree for phylogenetic diversity and unifrac 
+#dist.seqs(fasta=final.fasta, output=lt) 
+#clearcut(phylip=final.phylip.dist) 
+# Prepare for analysis 
+# get number of sequences per sample 
+count.groups(shared=final.opti_mcc.shared) 
+#subsample data TESTING UNCOMMENTED 
+sub.sample(shared=final.opti_mcc.shared, size=) 
+##OTU-based analysis 
+#rarefy data for beta diversity 
+dist.shared(shared=final.opti_mcc.shared, calc=braycurtis, subsample=t) 
+dist.shared(shared=final.opti_mcc.shared, calc=braycurtis, output=column, subsample=t) 
+dist.shared(shared=final.opti_mcc.shared, calc=braycurtis, output=square, subsample=t) 
+ 
+#nmds - 2d 
+nmds(phylip=final.opti_mcc.braycurtis.0.03.lt.ave.dist) 
+#output file = final.opti_mcc.braycurtis.0.03.lt.ave.nmds.stress 
+rename.file(column=current, prefix=final.2d) 
+#nmds - 3d 
+nmds(phylip=final.opti_mcc.braycurtis.0.03.lt.ave.dist, mindim=3, maxdim=3) 
+# you want stress value below 0.20, but 0.10 is better 
+rename.file(column=current, prefix=final.3d) 
+#alpha diversity - phylogeny 
+#phylo.diversity(tree=final.phylip.tre, count=final.count_table, rarefy=T) 
+#beta diversity - phylogeny 
+#unifrac 
+#unifrac.unweighted(tree=final.phylip.tre, count=final.count_table, distance=lt, random=F, subsample=t) 
+#unifrac.weighted(tree=final.phylip.tre, count=final.count_table, distance=lt, random=F, subsample=t) 
