@@ -1,0 +1,96 @@
+make.file(inputdir=., type=fastq, prefix=fungi) 
+ 
+make.contigs(file=fungi.files, maxambig=0, maxlength=475, maxhomop=8) 
+summary.seqs(fasta=current, count=current) 
+ 
+screen.seqs(fasta=current, count=current, minlength=325) 
+summary.seqs(fasta=current, count=current) 
+ 
+unique.seqs(fasta=current, count=current) 
+summary.seqs(fasta=current, count=current) 
+ 
+#count.seqs? 
+pre.cluster(fasta=current, count=current, diffs=3) #!! 
+ 
+chimera.vsearch(fasta=current, count=current, dereplicate=T) #remove.seqs, count.seqs, pre.cluster, screen.seqs, count.seqs? 
+summary.seqs(fasta=current, count=current) 
+ 
+# silva lsu database (unite db used previously) 
+ 
+pcr.seqs(fasta=silva.nr_v138.align, oligos=ITS.oligos, keepdots=T, pdiffs=3, rdiffs=3) 
+summary.seqs(fasta=current) 
+ 
+list.seqs(fasta=silva.nr_v138.pcr.align) 
+get.seqs(taxonomy=silva.nr_v138.tax, accnos=current)  
+ 
+classify.seqs(fasta=fungi.trim.contigs.good.unique.precluster.denovo.vsearch.fasta, count=current, reference=silva.nr_v138.pcr.align, taxonomy=silva.nr_v138.pick.tax, cutoff=80) 
+# many sequences cannot be classified, use remove.lineage(taxon=unknown) command to remove such sequences 
+ 
+summary.tax(taxonomy=current, count=current) 
+ 
+rename.file(fasta=current, count=current, taxonomy=current, prefix=final_silv_fungi) 
+ 
+#dist.seqs(fasta=current, cutoff=0.03) #aborting? Not same length 
+ 
+#make OTU table 
+cluster(fasta=final_silv_fungi.fasta, count=final_silv_fungi.count_table, method=agc, cutoff=0.05) 
+ 
+make.shared(list=current, count=final_silv_fungi.count_table, label=0.05) 
+ 
+classify.otu(list=current, count=current, taxonomy=final_silv_fungi.taxonomy, label=0.05) 
+ 
+get.oturep(fasta=current, count=current, list=current, method=abundance) 
+ 
+count.groups(shared=current) 
+ 
+phylotype(taxonomy=final_silv_fungi.taxonomy) 
+ 
+summary.single(shared=current, calc=nseqs-sobs-coverage-shannon-shannoneven-invsimpson, subsample=) 
+ 
+dist.shared(shared=current, calc=braycurtis-jest-thetayc, subsample=) 
+dist.shared(shared=current, calc=braycurtis, output=square, subsample=t) 
+ 
+ 
+sub.sample(shared=current, size=) 
+ 
+# PR2 database for protists 
+ 
+pcr.seqs(fasta=pr2_db.fasta, oligos=ITS.oligos, keepdots=T, pdiffs=3, rdiffs=3) 
+summary.seqs(fasta=current) 
+ 
+list.seqs(fasta=pr2_db.pcr.fasta)  
+get.seqs(taxonomy=pr2_db.tax, accnos=current) 
+ 
+chimera.vsearch(fasta=fungi.trim.contigs.good.unique.precluster.fasta, count=fungi.trim.contigs.good.unique.precluster.count_table, dereplicate=T) 
+summary.seqs(fasta=current, count=current) 
+ 
+classify.seqs(fasta=fungi.trim.contigs.good.unique.precluster.denovo.vsearch.fasta, count=fungi.trim.contigs.good.unique.precluster.denovo.vsearch.count_table, reference=pr2_db.pcr.fasta, taxonomy=pr2_db.pick.tax, cutoff=80) 
+#many sequences cannot be classified – use remove.lineage command taxon=unknown to remove sequences 
+ 
+summary.tax(taxonomy=current, count=current) 
+ 
+rename.file(fasta=current, count=current, taxonomy=current, prefix=final_pr2_fungi) 
+ 
+#dist.seqs(fasta=current, cutoff=0.03) #not same length, aborting 
+ 
+#make OTU table 
+ 
+cluster(fasta=final_pr2_fungi.fasta, count=final_pr2_fungi.count_table, method=agc, cutoff=0.05) 
+ 
+make.shared(list=current, count=final_pr2_fungi.count_table, label=0.05) 
+ 
+classify.otu(list=current, count=current, taxonomy=final_pr2_fungi.taxonomy, label=0.05) 
+ 
+get.oturep(fasta=current, count=current, list=current, method=abundance) 
+ 
+count.groups(shared=current) 
+ 
+phylotype(taxonomy=final_pr2_fungi.taxonomy) 
+ 
+summary.single(shared=current, calc=nseqs-sobs-coverage-shannon-shannoneven-invsimpson, subsample=) 
+ 
+dist.shared(shared=current, calc=braycurtis-jest-thetayc, subsample=) 
+dist.shared(shared=current, calc=braycurtis, output=square, subsample=t) 
+ 
+ 
+sub.sample(shared=current, size=) 
