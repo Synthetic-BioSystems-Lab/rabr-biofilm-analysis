@@ -1,0 +1,51 @@
+# compile fastq files 
+make.file(inputdir=., type=fastq, prefix=18S_p0) 
+ 
+make.contigs(file=18S_p0.files, maxambig=0, maxlength=400, maxhomop=8) 
+summary.seqs(fasta=current, count=current) 
+ 
+screen.seqs(fasta=current, count=current, minlength=350) 
+summary.seqs(fasta=current, count=current) 
+ 
+# remove duplicate sequences 
+unique.seqs(fasta=current, count=current) 
+summary.seqs(fasta=current, count=current) 
+ 
+# modify reference sequences 
+pcr.seqs(fasta=pr2_db.fasta, oligos=18S.oligos, keepdots=T, pdiffs=0, rdiffs=0) 
+summary.seqs(fasta=current) 
+ 
+# align sequences to reference alignment 
+# align.seqs(fasta=18S_p0.trim.contigs.good.unique.fasta, reference=pr2_db.pcr.fasta, flip=T) 
+# summary.seqs(fasta=current, count=current) 
+ 
+#include screen.seqs? 
+screen.seqs(fasta= 18S_p0.trim.contigs.good.unique.fasta, count=18S_p0.trim.contigs.good.count_table, optimize=start-end) 
+summary.seqs(fasta=current, count=current) 
+ 
+#filter.seqs(fasta=current, vertical=T, trump=.) 
+#summary.seqs(fasta=current, count=current) 
+ 
+unique.seqs(fasta=current, count=current) 
+summary.seqs(fasta=current, count=current) 
+ 
+pre.cluster(fasta=current, count=current, diffs=3) 
+ 
+chimera.vsearch(fasta=18S_p0.trim.contigs.good.unique.good.unique.precluster.fasta, count=18S_p0.trim.contigs.good.unique.good.unique.precluster.count_table, dereplicate=T) 
+summary.seqs(fasta=current, count=current) 
+ 
+list.seqs(fasta=pr2_db.pcr.fasta) 
+get.seqs(taxonomy= pr2_db.tax, accnos=current) 
+ 
+classify.seqs(fasta=18S_p0.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.fasta, count=18S_p0.trim.contigs.good.unique.good.filter.unique.precluster.denovo.vsearch.count_table, reference= pr2_db.pcr.fasta, taxonomy= pr2_db.pick.tax, cutoff=80) 
+ 
+summary.tax(taxonomy=current, count=current) 
+ 
+rename.file(fasta=current, list=current, count=current, taxonomy=current, column=current, prefix=final_p0) 
+ 
+#RStudio 
+dist.seqs(fasta=final_p0.fasta, cutoff=0.03) 
+cluster(column=final_p0.dist, count=final_p0.count_table) 
+make.shared(list=current, count=current, label=0.03) 
+summary.single(shared=final_p0.opti_mcc.shared, calc=nseqs-coverage-sobs-invsimpson, subsample=T) 
+classify.otu(list=current, count=current, taxonomy=final_p0.taxonomy, label=0.03) 
