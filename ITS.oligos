@@ -1,0 +1,13 @@
+# Amplifies V3-V4 region of fungi 18S rDNA 
+# Amplicon = 460 bp 
+primer GGCAAGTCTGGTGCC ACGGTATCTRATCRTC 18S_V3V4 
+ 
+# Amplifies V7-V8 regions of fungi 18S rDNA 
+# Amplicon = 350 bp 
+primer CGWTAACGAACGAG AICCATTCAATCGG 18S_V7V8 
+ 
+# Amplicon > 384 
+primer ACCTGCGGARGGAT GAGATCCRTTGYTRAA ITS1 
+ 
+# Amplicon > 305 
+primer GTGAATCATCGARTC TCCTCCGCTTATTGAT ITS2 
