@@ -1,13 +1,14 @@
 # rabr-biofilm-analysis
 POPULATION ANALYSIS OF CYANOBACTERIA IN ROTATING ALGAL BIOFILM REACTORS
 
-List of files within Registry
+List of files within Registry:
 16S Analysis Files
 16S.sh – Executable file that sends the 16S batch file to the high performance computing center.
 16S.oligos – File that contains the 16S primers. Used by the 16S batch file.
 16S.batch – Classifies the 16S sequences using mothur and Silva.
 A_DADA2.R R – Classifies the lab scale, CVWRF, greenhouse RABRs, and the trickling filter 16S sequences using DADA2.
 E_DADA2.R – Classifies the pilot and control RABR 16S sequences using DADA2.
+tax_versus.R – Compares the mothur and DADA2 analysis results for the 16S sequences.
 16S_abund.R – Generates relative abundance graphs of 16S sequences from the mothur analysis. Was manually edited and rerun to select for each taxonomic level (Phylum, Class, Order, Family, Genus). Resulting figures were color adjusted to match with relative abundance graphs from the 16S DADA2 analysis.
 16S_alphaD.R – Generates alpha diversity and productivity graphs of 16S sequences from the mothur analysis.
 16S_betaD.R – Generates beta diversity graphs of 16S sequences from the mothur analysis.
