@@ -1,6 +1,7 @@
 library(tidyr)
 library(ggtext)
 library(readxl)
+library(tidyverse)
 library(glue)
 
 setwd("~/Miller Lab/Rscripts_PilotRABR")
@@ -201,10 +202,10 @@ read_tsv("DADA2/16SDADA2visualization/processed_data/16S.labvPilot.0.03.lefse_su
   labs(y=NULL, x="LDA Score (log 10)", title="Discriminant Genera between the\nLab and Pilot RABRs") +
   scale_x_continuous(limits = c(-6, 6), breaks=seq(-6, 6, by=2)) +
   theme_classic() +
-  theme(axis.text.y = element_markdown(size=6),
+  theme(axis.text.y = element_markdown(size=12),
         plot.title=element_text(hjust=0.5))
 
-ggsave("DADA2/16SDADA2visualization/16S_D_plots/16SD_lefse_labvpilot.tiff", width=6, height=5)
+ggsave("DADA2/16SDADA2visualization/16S_D_plots/16SD_lefse_labvpilot.tiff", width=8, height=5)
 
 ##TF vs Pilot
 pilot_metadata <- gather_metadata("section", 1) 
@@ -248,14 +249,14 @@ TFvPilot %>%
 #in terminal
 # mothur\mothur
 #lefse(shared=16S.TFvPilot.shared, design=16S.TFvPilot.design, inputdir=DADA2\16SDADA2visualization\processed_data)
-#NOT WORKING
+
 
 
 # make plots
 # TF v Pilot
 prep <- read_tsv("DADA2/16SDADA2visualization/processed_data/16S.TFvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 4) %>%
+  filter(LDA > 3.88) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "TF", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA))

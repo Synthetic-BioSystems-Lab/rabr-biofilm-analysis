@@ -27,8 +27,9 @@ all_shared <- shared %>%
   # summarize(total=sum(value)) %>% filter(total ==0) %>%
   ungroup() %>%
   select(-total) %>%
-  pivot_wider(Group)
-  #filter(Group != "C1_18S" & Group != "C2_18S")
+  pivot_wider(Group) %>%
+  filter(Group %in% c("10_5_18S", "19_18S", "26_18S", "11S_18S", "11R_18S", 
+                      "S1_18S", "S2_18S", "S3_18S"))
 
 for(i in 1:nrow(all_shared)) {
   row <- all_shared[i,]
@@ -80,6 +81,8 @@ date_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(date_star,"18Spilotv2/18Scsvs/18S_beta_date.csv", row.names = FALSE)
+
 ggplot(date_star, aes(x=NMDS1, xend=centroid1,
                       y=NMDS2, yend=centroid2, color=date)) +
   geom_segment() +
@@ -102,7 +105,7 @@ ggplot(date_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("18Spilotv2/18Splots/18S_nmds_all_date.tiff", width=5, height=4)
@@ -543,6 +546,8 @@ all_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(all_star,"18Spilotv2/18Scsvs/18S_beta_all.csv", row.names = FALSE)
+
 ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                      y=NMDS2, yend=centroid2, color=section)) +
   geom_segment() +
@@ -565,7 +570,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("18Spilotv2/18Splots/18S_nmds_all.tiff", width=5, height=4)

@@ -51,7 +51,10 @@ all_shared <- shared
 #   all_shared[i,1] <- row[1]
 # }
 
-all_shared <- as.data.frame(all_shared)
+all_shared <- shared %>%
+  filter(sample_id %in% c("10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S",
+                          "S1_16S", "S2_16S", "S3_16S")) %>%
+  as.data.frame
 
 rownames(all_shared) <- all_shared$sample_id
 all_shared <- all_shared[, -1]
@@ -64,18 +67,18 @@ all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 all_scores <- scores(all_nmds) %>%
   as_tibble(rownames = "Group")
 
-all_metadata <- read_excel("metadata_start.xlsx", sheet=1) %>%
+all_metadata <- read_excel("16S_D_metadata.xlsx", sheet=1) %>%
   rename_all(tolower) %>%
   mutate(sample = str_replace_all(sample, "-", "_")) %>%
   select(sample, date)
 
 all_metadata_nmds <- inner_join(all_metadata, all_scores, by=c('sample'='Group')) %>%
   mutate(date = factor(date,
-                       levels=c("10_5_23",
-                                "10_12_23",
-                                "10_19_23",
-                                "10_26_23",
-                                "11_2_23")))
+                       levels=c("2023_10_05",
+                                "2023_10_12",
+                                "2023_10_19",
+                                "2023_10_26",
+                                "2023_11_02")))
 
 Five_color <- "#BEBEBE"
 Twelve_color <- "#0000FF"
@@ -94,6 +97,8 @@ date_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(date_star,"16SDcsvs/16SD_beta_date.csv", row.names = FALSE)
+
 ggplot(date_star, aes(x=NMDS1, xend=centroid1,
                       y=NMDS2, yend=centroid2, color=date)) +
   geom_segment() +
@@ -105,11 +110,11 @@ ggplot(date_star, aes(x=NMDS1, xend=centroid1,
              inherit.aes=FALSE) +
   #coord_fixed(xlim=c(-1, 1), ylim=c(1, 1)) +
   labs(x="NMDS Axis 1", y="NMDS Axis 2", title="All Samples NMDS by Date") +
-  scale_color_manual(name=NULL, breaks=c("10_5_23", "10_12_23", "10_19_23", "10_26_23", "11_2_23"),
-                     labels=c("10_5_23", "10_12_23", "10_19_23", "10_26_23", "11_2_23"),
+  scale_color_manual(name=NULL, breaks=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02"),
+                     labels=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02"),
                      values=c(Five_color, Twelve_color, Nineteen_color, TwentySix_color, Two_color)) +
-  scale_fill_manual(name=NULL, breaks=c("10_5_23", "10_12_23", "10_19_23", "10_26_23", "11_2_23"),
-                    labels=c("10_5_23", "10_12_23", "10_19_23", "10_26_23", "11_2_23"),
+  scale_fill_manual(name=NULL, breaks=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02"),
+                    labels=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02"),
                     values=c(Five_color, Twelve_color, Nineteen_color, TwentySix_color, Two_color)) +
   theme_classic() + xlim(-0.75, 0.75) + ylim(-0.75, 0.75) +
   theme(legend.key.size = unit(0.25, "cm"),
@@ -141,7 +146,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2007)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -224,7 +229,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=805)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -308,7 +313,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=805)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -393,7 +398,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=804)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -455,7 +460,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
 ggsave("16S_D_plots/16SD_nmds_pilotv81RABRvTFvCVWRFvGH.tiff", width=5, height=4)
 
 # All samples nmds
-#Beta Diversity PilotvLabRABR
+#Beta Diversity 
 all_shared <- shared %>%
   #filter(sample_id %in% samples_wanted) %>%
   as.data.frame
@@ -467,7 +472,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=804)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -501,6 +506,8 @@ all_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(all_star,"16SDcsvs/16SD_beta_all.csv", row.names = FALSE)
+
 ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                      y=NMDS2, yend=centroid2, color=section)) +
   geom_segment() +
@@ -523,7 +530,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16S_D_plots/16SD_nmds_all.tiff", width=5, height=4)

@@ -86,6 +86,8 @@ rarefaction_all <- function(name) {
   GHR_color <- "cyan"
   Control_color <- "#BE00FF"
   
+  write.csv(prep_rarecurve,paste("ITSpilot/ITScsvs/IT_", name, "_rare_allcolor.csv", sep=""), row.names = FALSE)
+  
   breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
   labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
   prep_rarecurve %>%

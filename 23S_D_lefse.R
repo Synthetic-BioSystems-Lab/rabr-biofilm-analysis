@@ -208,7 +208,7 @@ read_tsv("DADA2/23SDADA2visualization/processed_data/23S.labvPilot.0.03.lefse_su
   labs(y=NULL, x="LDA Score (log 10)", title="Discriminant Genera between the\nLab and Pilot RABRs") +
   scale_x_continuous(limits = c(-6, 6), breaks=seq(-6, 6, by=2)) +
   theme_classic() +
-  theme(axis.text.y = element_markdown(size=6),
+  theme(axis.text.y = element_markdown(size=12),
         plot.title=element_text(hjust=0.5))
 
 ggsave("DADA2/23SDADA2visualization/23S_D_plots/23SD_lefse_labvpilot.tiff", width=6, height=5)

@@ -17,7 +17,7 @@ gather_metadata <- function(target, t2, t3, page) {
     select(sample, target, t2, t3)
 }
 name <- "pr2_euk"
-Tlevel <- "phylum"
+Tlevel <- "division"
 
 
 abund <- function(name, Tlevel) {
@@ -33,7 +33,7 @@ abund <- function(name, Tlevel) {
     select("OTU", "Taxonomy") %>%
     rename_all(tolower) %>%
     mutate(taxonomy = str_replace_all(taxonomy, "\\(\\d+\\)", ""), taxonomy = str_replace(taxonomy, ";$", "")) %>%
-    separate(taxonomy, into=c("kingdom", "phylum", "class", "order", "family", "genus"), sep = ";")
+    separate(taxonomy, into=c("domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"), sep = ";")
   
   # import metadata
   all_metadata <- gather_metadata("section", "date", "label", 1) 
@@ -54,7 +54,7 @@ abund <- function(name, Tlevel) {
     group_by(sample_id) %>%
     mutate(rel_abund = count / sum(count)) %>%
     ungroup() %>%
-    pivot_longer(cols = c("kingdom", "phylum", "class", "order", "family", "genus"), names_to = "level", values_to = "taxon")
+    pivot_longer(cols = c("domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"), names_to = "level", values_to = "taxon")
   
   sample_order <- all_metadata %>%
     arrange(date) %>%
@@ -91,6 +91,7 @@ abund <- function(name, Tlevel) {
               "CVWRF" = "CVWRF",
               "GHR" = "GHR",
               "TF" = "Trickling Filter")
+  write.csv(taxon_rel_abund,paste("ITSpilot/ITScsvs/IT_", name, "_abund_", Tlevel, ".csv", sep=""), row.names = FALSE)
   
   #assemble others and make RA stacked bar plot
   prep <- inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%
@@ -101,6 +102,7 @@ abund <- function(name, Tlevel) {
     mutate(label = factor(label),
            label= fct_reorder(label, order))
   
+    
   prep %>%
     ggplot(aes(x = label, y = rel_abund, fill = taxon)) +
     geom_col() + 
@@ -160,7 +162,7 @@ abund <- function(name, Tlevel) {
 }
 
 for (i in c("pr2_euk")) {
-  for (j in c("phylum", "class", "order", "family", "genus")) {
+  for (j in c("supergroup", "division", "subdivision", "class", "order", "family", "genus")) {
     abund(i, j)
   }
 }

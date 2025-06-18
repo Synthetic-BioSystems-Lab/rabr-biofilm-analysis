@@ -98,6 +98,8 @@ TF_color <- "#00FF00"
 GHR_color <- "cyan"
 Control_color <- "#BE00FF"
 
+write.csv(prep_rarecurve,"23Scsvs/23S_rare_allcolor.csv", row.names = FALSE)
+
 breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
 labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
 prep_rarecurve %>%

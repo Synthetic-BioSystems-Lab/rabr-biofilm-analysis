@@ -97,6 +97,8 @@ pretty <- c("pilot" = "Pilot-scale RABRs",
             "TF" = "Trickling Filter")
 #<br>
 
+write.csv(taxon_rel_abund,"16Spilot/16Scsvs/16S_abund_genus.csv", row.names = FALSE)
+
 #assemble others and make RA stacked bar plot
 prep <- inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%
   #filter(sample_id %in% c("S1_16S", "S2_16S", "S3_16S")) %>%
@@ -109,6 +111,8 @@ prep <- inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%
   inner_join(., sample_order, by=c("sample_id"="sample")) %>%
   mutate(label = factor(label),
          label= fct_reorder(label, order))
+
+
 
 prep %>%
   ggplot(aes(x = label, y = rel_abund, fill = taxon)) +
@@ -141,6 +145,8 @@ ggsave("16Spilot/16Splots/16S_stacked_bar_genus.tiff", width=10, height=4)
 #   inner_join(., sample_order, by="sample_id") %>%
 #   mutate(sample_id = factor(sample_id),
 #          sample_id= fct_reorder(sample_id, order)) %>%
+
+
 prep %>%
   ggplot(aes(x=label, fill = rel_abund, y = taxon)) +
   geom_tile() +

@@ -83,6 +83,9 @@ Control_color <- "#BE00FF"
 
 breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
 labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
+
+write.csv(prep_rarecurve,"16Spilot/16Scsvs/16S_rare_allcolor.csv", row.names = FALSE)
+
 prep_rarecurve %>%
   ggplot(aes(x=n_seqs, y=value, group=Group, colour = section)) +
   geom_line() + geom_point(size=1) +

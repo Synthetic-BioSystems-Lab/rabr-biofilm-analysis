@@ -26,8 +26,9 @@ beta_div <- function(name) {
     # summarize(total=sum(value)) %>% filter(total ==0) %>%
     ungroup() %>%
     select(-total) %>%
-    pivot_wider(Group)
-    #filter(Group != "C1_ITS" & Group != "C2_ITS")
+    pivot_wider(Group) %>%
+    filter(Group %in% c("10_5_ITS", "19_ITS", "26_ITS", "11S_ITS", "11R_ITS",
+                        "S1_ITS", "S2_ITS", "S3_ITS"))
   
   # for(i in 1:nrow(all_shared)) {
   #   row <- all_shared[i,]
@@ -72,6 +73,9 @@ beta_div <- function(name) {
   
   breaks=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02")
   labels=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02")
+  
+  write.csv(date_star,paste("ITSpilot/ITScsvs/IT_", name, "_beta_date.csv", sep=""), row.names = FALSE)
+  
   ggplot(date_star, aes(x=NMDS1, xend=centroid1,
                         y=NMDS2, yend=centroid2, color=date)) +
     geom_segment() +
@@ -94,7 +98,7 @@ beta_div <- function(name) {
           legend.position = c(0.85, 0.9),
           legend.background = element_rect(fill="NA",
                                            color="black"),
-          legend.margin = margin(t=-2, r=3, b=3, l=3),
+          legend.margin = margin(t=2, r=3, b=3, l=3),
           plot.title=element_text(hjust=0.5))
   
   ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_nmds_all_date.tiff", sep=""), width=5, height=4)
@@ -481,7 +485,7 @@ beta_div <- function(name) {
   ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_nmds_pilotv81RABRvTFvCVWRFvGH.tiff", sep=""), width=5, height=4)
   
   # All samples nmds
-  #Beta Diversity PilotvLabRABR
+  #Beta Diversity 
   all_shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
     select(Group, starts_with("Otu")) %>%
     #filter(Group %in% samples_wanted) %>%
@@ -539,6 +543,9 @@ beta_div <- function(name) {
            centroid2 = mean(NMDS2)) %>%
     ungroup()
   
+  write.csv(all_star,paste("ITSpilot/ITScsvs/IT_", name, "_beta_all.csv", sep=""), row.names = FALSE)
+  
+  
   ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                        y=NMDS2, yend=centroid2, color=section)) +
     geom_segment() +
@@ -561,7 +568,7 @@ beta_div <- function(name) {
           legend.position = c(0.85, 0.9),
           legend.background = element_rect(fill="NA",
                                            color="black"),
-          legend.margin = margin(t=-2, r=3, b=3, l=3),
+          legend.margin = margin(t=2, r=3, b=3, l=3),
           plot.title=element_text(hjust=0.5))
   
   ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_nmds_all.tiff", sep=""), width=5, height=4)

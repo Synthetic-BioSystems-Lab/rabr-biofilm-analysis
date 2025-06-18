@@ -130,6 +130,7 @@ low_n <- dli_count %>%
   filter(dli_level == "low") %>%
   pull(n)
 
+write.csv(dli_metadata_alpha,"18Spilotv2/18Scsvs/18S_alpha_dli.csv", row.names = FALSE)
 
 # box plot with jitters
 dli_metadata_alpha %>%
@@ -199,8 +200,19 @@ control_n <- all_count %>%
   filter(section == "control") %>%
   pull(n)
 
-breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
+breaks <- c("4_pilot", "5_CVWRF", "2_81RABR", "6_TF", "3_GHR", "1_control")
 labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
+
+all_metadata_alpha <- all_metadata_alpha %>%
+  mutate(section = str_replace_all(section, "control", "1_control")) %>%
+  mutate(section = str_replace_all(section, "81RABR", "2_81RABR")) %>%
+  mutate(section = str_replace_all(section, "GHR", "3_GHR")) %>%
+  mutate(section = str_replace_all(section, "pilot", "4_pilot")) %>%
+  mutate(section = str_replace_all(section, "CVWRF", "5_CVWRF")) %>%
+  mutate(section = str_replace_all(section, "TF", "6_TF"))
+
+write.csv(all_metadata_alpha,"18Spilotv2/18Scsvs/18S_alpha_all.csv", row.names = FALSE)
+
 # box plot with jitters
 all_metadata_alpha %>%
   ggplot(aes(x=section, y=invsimpson, fill=section)) +
@@ -302,7 +314,7 @@ prod_meta_alpha2 %>%
   ggtitle("Productivity vs Inverse Simpson") +
   theme_classic() +
   ylim(0, 15) +
-  xlim(0, 15) +
+  xlim(0, 25) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
   stat_cor()+
   geom_smooth(method=lm, se=FALSE)

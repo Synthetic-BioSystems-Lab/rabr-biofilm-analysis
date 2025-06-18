@@ -14,15 +14,15 @@ gather_metadata <- function(target, t2, t3, page) {
 
 #Beta Diversity 1
 
-dist_matrix <- read_tsv("16Spilot/final.opti_mcc.braycurtis.0.03.square.ave.dist", 
-                        skip=1, col_names = FALSE) %>%
-  as.data.frame
-
-rownames(dist_matrix) <- dist_matrix$X1
-dist_matrix <- dist_matrix[, -1]
-dist_matrix <- as.matrix(dist_matrix)
-
-dist_nmds <- metaMDS(dist_matrix) # also insufficient data :(
+# dist_matrix <- read_tsv("16Spilot/final.opti_mcc.braycurtis.0.03.square.ave.dist", 
+#                         skip=1, col_names = FALSE) %>%
+#   as.data.frame
+# 
+# rownames(dist_matrix) <- dist_matrix$X1
+# dist_matrix <- dist_matrix[, -1]
+# dist_matrix <- as.matrix(dist_matrix)
+# 
+# dist_nmds <- metaMDS(dist_matrix) # also insufficient data :(
 
 #Beta Diversity 2
 
@@ -36,8 +36,9 @@ all_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
   # summarize(total=sum(value)) %>% filter(total ==0) %>%
   ungroup() %>%
   select(-total) %>%
-  pivot_wider(Group)
-  #filter(Group != "C1_16S" & Group != "C2_16S")
+  pivot_wider(Group) %>%
+  filter(Group %in% c("10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S",
+         "S1_16S", "S2_16S", "S3_16S"))
 
 for(i in 1:nrow(all_shared)) {
   row <- all_shared[i,]
@@ -89,6 +90,8 @@ date_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(date_star,"16Spilot/16Scsvs/16S_beta_date.csv", row.names = FALSE)
+
 ggplot(date_star, aes(x=NMDS1, xend=centroid1,
                       y=NMDS2, yend=centroid2, color=date)) +
   geom_segment() +
@@ -111,7 +114,7 @@ ggplot(date_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_all_date.tiff", width=5, height=4)
@@ -470,6 +473,8 @@ all_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(date_star,"16Spilot/16Scsvs/16S_beta_pilotv81RABRvTFvCVWRFvGH.csv", row.names = FALSE)
+
 ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                      y=NMDS2, yend=centroid2, color=section)) +
   geom_segment() +
@@ -492,7 +497,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_pilotv81RABRvTFvCVWRFvGH.tiff", width=5, height=4)
@@ -522,7 +527,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073) 
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -556,6 +561,8 @@ all_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(all_star,"16Spilot/16Scsvs/16S_beta_all.csv", row.names = FALSE)
+
 ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                      y=NMDS2, yend=centroid2, color=section)) +
   geom_segment() +
@@ -578,7 +585,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_all.tiff", width=5, height=4)

@@ -93,6 +93,8 @@ prep_rarecurve <- map_dfr(rarecurve_data, bind_rows) %>%
   mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
   select(-name)
 
+write.csv(prep_rarecurve,"16SDcsvs/16SD_rare_allcolor.csv", row.names = FALSE)
+
 Pilot_color <- "#BEBEBE"
 CVWRF_color <- "#0000FF"
 Labrabr_color <- "#FF0000"
@@ -128,32 +130,28 @@ ggsave("16S_D_plots/16SD_rarefaction_color.tiff", width=7, height=4)
 # pilot vs labRABR vs TF vs GH vs 
 # Rarefaction
 
-# Lab RABRs
-# "13_R27_11_3_21_16S", "17_R36_10_28_21_16S", "19_R43_11_15_21_16S",
-# "11_R45_10_18_21_16S", "16_R45_11_15_21", "14_R46_11_5_21_16S",
-# "20_R58_10_28_21_16S", "18_R60_11_21_16S", "12_R60_11_15_21_16S", 
-# "15_R7_11_15_21_16S", "21_R72_11_15_21_16S"
+Lab_RABRs <- c("13_R27_11_3_21_16S", "17_R36_10_28_21_16S", "19_R43_11_15_21_16S",
+"11_R45_10_18_21_16S", "16_R45_11_15_21", "14_R46_11_5_21_16S",
+"20_R58_10_28_21_16S", "18_R60_11_21_16S", "12_R60_11_15_21_16S", 
+"15_R7_11_15_21_16S", "21_R72_11_15_21_16S")
 
-# Pilot
-# "10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S"
+Pilot <- c("10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S", "S1_16S", 
+           "S2_16S", "S3_16S")
 
-# TF
-# "3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S", "TF_7_6_21", "TF_9_11_21", "TF_11_9_21_R1"
-
-
-# CVWRF
-# "1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S"
-
-# GH
-# "2_GHR_6_15_22_16S", "6_GHR_5_1_22_16S"
+TF <- c("3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S", "TF_7_6_21",
+        "TF_9_11_21", "TF_11_9_21_R1")
 
 
-# Control
-# "C1_16S", "C2_16S"
+CVWRF <- c("1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S")
+
+GH <- c("2_GHR_6_15_22_16S", "6_GHR_5_1_22_16S")
+
+
+Control <- c("C1_16S", "C2_16S")
 
 
 loc_shared_df <- shared %>%
-  filter(sample_id %in% c("C1_16S", "C2_16S")) %>%
+  filter(sample_id %in% TF) %>%
   as.data.frame()
 
 rownames(loc_shared_df) <- loc_shared_df$Group
@@ -185,5 +183,5 @@ ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
         strip.placement="outside",
         strip.text.x = element_markdown())
 
-ggsave("16S_D_plots/16SD_rarefaction_Control.tiff", width=5, height=4)
+ggsave("16S_D_plots/16SD_rarefaction_TF.tiff", width=5, height=4)
 

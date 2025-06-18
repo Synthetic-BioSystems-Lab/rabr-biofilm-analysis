@@ -104,6 +104,7 @@ sample_order <- all_metadata %>%
   mutate(order = 1:nrow(.)) %>%
   select(sample, order, date)
 
+#"Kingdom", "Phylum", "Class", "Order", "Family", "Genus"
 taxon_rel_abund <- otu_rel_abund %>%
   filter(level=="Order") %>%
   group_by(section, sample_id, taxon, date, label) %>%
@@ -139,6 +140,8 @@ pretty <- c("pilot" = "Pilot-scale RABRs",
             "GHR" = "GHR",
             "TF" = "TF")
 #<br>
+write.csv(taxon_rel_abund,"23Scsvs/23S_abund_order.csv", row.names = FALSE)
+
 
 #assemble others and make RA stacked bar plot
 prep <- inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%

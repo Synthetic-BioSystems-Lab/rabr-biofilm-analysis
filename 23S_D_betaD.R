@@ -43,15 +43,18 @@ composite <- rbind(compositeE, compositeA) %>%
 shared <- rbind(asv_seqtabA, asv_seqtabE)%>%
   pivot_wider(names_from = ASVs, values_from = count, values_fill = 0) %>%
   mutate(sample_id = str_replace_all(sample_id, "-", "_"))
-all_shared <- shared 
+ 
 
 # for(i in 1:nrow(all_shared)) {
 #   row <- all_shared[i,]
 #   row[1] <- gsub("_23S", "", row[1])
 #   all_shared[i,1] <- row[1]
 # }
+samples_wanted <- c("10_5_23S", "19_23S","26_23S", "11S_23S", "11R_23S", "S1_23S", "S2_23S", "S3_23S")
 
-all_shared <- as.data.frame(all_shared)
+all_shared <- shared %>%
+  filter(sample_id %in% samples_wanted) %>%
+  as.data.frame
 
 rownames(all_shared) <- all_shared$sample_id
 all_shared <- all_shared[, -1]
@@ -88,6 +91,8 @@ date_star <- all_metadata_nmds %>%
 breaks=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02")
 labels=c("2023_10_05", "2023_10_12", "2023_10_19", "2023_10_26", "2023_11_02")
 
+write.csv(date_star,"23Scsvs/23S_beta_date.csv", row.names = FALSE)
+
 ggplot(date_star, aes(x=NMDS1, xend=centroid1,
                       y=NMDS2, yend=centroid2, color=date)) +
   geom_segment() +
@@ -110,7 +115,7 @@ ggplot(date_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("23S_D_plots/23SD_nmds_all_date.tiff", width=5, height=4)
@@ -448,7 +453,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
 ggsave("23S_D_plots/23SD_nmds_pilotv81RABRvTFvCVWRFvGH.tiff", width=5, height=4)
 
 # All samples nmds
-#Beta Diversity PilotvLabRABR
+#Beta Diversity 
 all_shared <- shared %>%
   #filter(sample_id %in% samples_wanted) %>%
   as.data.frame
@@ -494,6 +499,8 @@ all_star <- all_metadata_nmds %>%
          centroid2 = mean(NMDS2)) %>%
   ungroup()
 
+write.csv(all_star,"23Scsvs/23S_beta_all.csv", row.names = FALSE)
+
 ggplot(all_star, aes(x=NMDS1, xend=centroid1,
                      y=NMDS2, yend=centroid2, color=section)) +
   geom_segment() +
@@ -516,7 +523,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=1, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("23S_D_plots/23SD_nmds_all.tiff", width=5, height=4)

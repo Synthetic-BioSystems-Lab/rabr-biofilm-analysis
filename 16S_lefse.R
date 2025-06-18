@@ -159,7 +159,7 @@ LabvPilot %>%
 # Lab v Pilot
 read_tsv("16Spilot/processed_data/16S.labvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 4.1) %>%
+  filter(LDA > 4.25) %>%
   inner_join(., taxonomy, by=c("OTU" = "otu")) %>%
   mutate(LDA = if_else(Class == "81RABR", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -168,7 +168,7 @@ read_tsv("16Spilot/processed_data/16S.labvPilot.0.03.lefse_summary") %>%
   labs(y=NULL, x="LDA Score (log 10)", title="Discriminant Genera between the\nLab and Pilot RABRs") +
   scale_x_continuous(limits = c(-6, 6), breaks=seq(-6, 6, by=2)) +
   theme_classic() +
-  theme(axis.text.y = element_markdown(size=6),
+  theme(axis.text.y = element_markdown(size=12),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_lefse_labvpilot.tiff", width=6, height=5)

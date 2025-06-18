@@ -2,7 +2,8 @@ library(tidyverse)
 library(ggplot2)
 library(ggtext)
 library(readxl)
-
+library(NLP)
+library(ggpubr)
 
 setwd("~/Miller Lab/Rscripts_PilotRABR/DADA2/16SDADA2visualization")
 
@@ -153,7 +154,7 @@ low_n <- dli_count %>%
   filter(dli_level == "low") %>%
   pull(n)
 
-
+write.csv(dli_metadata_alpha,"16SDcsvs/16SD_alpha_dli.csv", row.names = FALSE)
 # box plot with jitters
 dli_metadata_alpha %>%
   ggplot(aes(x=dli_level, y=invsimpson, fill=dli_level)) +
@@ -216,8 +217,19 @@ control_n <- all_count %>%
   filter(section == "control") %>%
   pull(n)
 
-breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
+breaks <- c("4_pilot", "5_CVWRF", "2_81RABR", "6_TF", "3_GHR", "1_control")
 labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
+
+all_metadata_alpha <- all_metadata_alpha %>%
+  mutate(section = str_replace_all(section, "control", "1_control")) %>%
+  mutate(section = str_replace_all(section, "81RABR", "2_81RABR")) %>%
+  mutate(section = str_replace_all(section, "GHR", "3_GHR")) %>%
+  mutate(section = str_replace_all(section, "pilot", "4_pilot")) %>%
+  mutate(section = str_replace_all(section, "CVWRF", "5_CVWRF")) %>%
+  mutate(section = str_replace_all(section, "TF", "6_TF"))
+
+write.csv(all_metadata_alpha,"16SDcsvs/16SD_alpha_all.csv", row.names = FALSE)
+
 # box plot with jitters
 all_metadata_alpha %>%
   ggplot(aes(x=section, y=invsimpson, fill=section)) +
@@ -235,7 +247,7 @@ all_metadata_alpha %>%
                     labels=labels,
                     values=c(Pilot_color, CVWRF_color, Labrabr_color, TF_color, GHR_color, Control_color)) +
   theme_classic() +
-  ylim(0, 35) +
+  #ylim(0, 55) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
 
 ggsave("16S_D_plots/16SD_alpha_div_all_sections.tiff", width=5, height=4)
@@ -244,9 +256,9 @@ ggsave("16S_D_plots/16SD_alpha_div_all_sections.tiff", width=5, height=4)
 
 #EXPAND METADATA
 p_metadata_alpha <- all_metadata_alpha %>%
-  filter(section == "pilot")
+  filter(section == "4_pilot")
 pvl_metadata_alpha <- all_metadata_alpha %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   rbind(.,p_metadata_alpha)
 
 Pilot_color <- "#BEBEBE"
@@ -257,11 +269,11 @@ all_count <- pvl_metadata_alpha %>%
   dplyr::count(section)
 
 pilot_n <- all_count %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   pull(n)
 
 labRABR_n <- all_count %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   pull(n)
 
 # box plot with jitters
@@ -274,11 +286,11 @@ pvl_metadata_alpha %>%
   geom_jitter(show.legend=FALSE, width=0.25, shape=21, color="black") +
   labs(x=NULL, y="Inverse Simpson Index") +
   ggtitle("Standard vs Lab RABR Alpha Diversity by Section") +
-  scale_x_discrete(breaks=c("pilot", "81RABR"),
-                   labels=c("pilot", "81RABR")) +
+  scale_x_discrete(breaks=c("4_pilot", "2_81RABR"),
+                   labels=c("Pilot RABR", "Lab RABR")) +
   scale_fill_manual(name=NULL,
-                    breaks=c("pilot", "81RABR"),
-                    labels=c("pilot", "81RABR"),
+                    breaks=c("4_pilot", "2_81RABR"),
+                    labels=c("Pilot RABR", "Lab RABR"),
                     values=c(Pilot_color, labRABR_color)) +
   theme_classic() +
   ylim(0, 35) +
@@ -299,7 +311,9 @@ prod_meta_alpha1 %>%
   ggtitle("Productivity vs Inverse Simpson") +
   theme_classic() +
   ylim(0, 35) +
-  theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
+  theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
+  stat_cor(label.x=2.5, label.y=17)+
+  geom_smooth(method=lm, se=FALSE)
 ggsave("16S_D_plots/16SD_alpha_div_vPilot_Productivity.tiff", width=3.5, height=2.3)
 
 #lab rabr productivity v invsimpson
@@ -313,14 +327,16 @@ prod_meta_alpha2 %>%
   labs(x="Lab RABR Productivity", y="Inverse Simpson") +
   ggtitle("Productivity vs Inverse Simpson") +
   theme_classic() +
-  ylim(0, 35) +
-  xlim(0, 30) +
-  theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
+  ylim(0, 25) +
+  xlim(0, NA) +
+  theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
+  stat_cor(label.x=2.5, label.y=25)+
+  geom_smooth(method=lm, se=FALSE)
 ggsave("16S_D_plots/16SD_alpha_div_v81RABR_Productivity.tiff", width=3.5, height=2.3)
 
 # pilot RABR date productivity
 date_meta_alpha <- all_metadata_alpha %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   select(sample_id, date, invsimpson)
 
 RnS <- date_meta_alpha %>%
