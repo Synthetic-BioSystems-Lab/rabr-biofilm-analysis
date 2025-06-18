@@ -154,10 +154,12 @@ versus <- function(tax, lvl, pool_lvl) {
     coeff<-coefficients(reg)           
     intercept<-round(coeff[1], digits=3)
     slope<- round(coeff[2], digits=3) 
+    write.csv(prep,paste("mothurvDADA2/vcsvs/16S_vs_", lvl, ".csv", sep=""), row.names = FALSE)
+    
     prep %>%
       ggplot(aes(x=M_rel_abund, y=D_rel_abund)) +
       geom_point() + 
-      labs(x="mothur", y="DADA2") +
+      labs(x="mothur Relative Abundance (%)", y="DADA2 Relative Abundance (%)") +
       ggtitle(paste(lvl, " Alignment", sep = ""), subtitle = paste("Slope=", slope, ", Intercept=", intercept, sep = "")) +
       theme_classic() +
       ylim(0, 100) +
@@ -172,7 +174,7 @@ versus <- function(tax, lvl, pool_lvl) {
     prep %>%
       ggplot(aes(x=M_rel_abund, y=D_rel_abund, color = section)) +
       geom_point() + 
-      labs(x="mothur", y="DADA2") +
+      labs(x="mothur Relative Abundance (%)", y="DADA2 Relative Abundance (%)") +
       ggtitle(paste(lvl, " Alignment", sep = "")) +
       theme_classic() +
       ylim(0, 100) +
@@ -196,6 +198,8 @@ versus <- function(tax, lvl, pool_lvl) {
              label= fct_reorder(label, order),
              percent_diff = 100*abs(M_rel_abund - D_rel_abund) / ((M_rel_abund+D_rel_abund)/2)) %>%
       pivot_longer(c(M_rel_abund, D_rel_abund), names_to = "method", values_to = "rel_abund")
+    
+    write.csv(prep_rel_abund,paste("mothurvDADA2/vcsvs/16S_vs_", lvl, "_", tax, ".csv", sep=""), row.names = FALSE)
     
     # plot RA vs Samples with DADA2 and mothur separate colors
     prep_rel_abund %>%
@@ -252,6 +256,10 @@ versus("", "Order", 10)
 versus("", "Family", 10)
 versus("", "Genus", 10)
 
+versus("Phormidiaceae", "Family", 10)
+versus("Tychonema_CCAP_1459-11B", "Genus", 10)
+versus("Symphothece_PCC-7002", "Genus", 10)
+versus("Nostocales", "Order", 10)
 versus("Bacteroidetes", "Phylum", 10)
 versus("Proteobacteria", "Phylum", 10)
 versus("Cyanobacteria", "Phylum", 10)
