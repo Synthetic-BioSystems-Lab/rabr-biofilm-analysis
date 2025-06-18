@@ -1,8 +1,8 @@
 # rabr-biofilm-analysis
-POPULATION ANALYSIS OF CYANOBACTERIA IN ROTATING ALGAL BIOFILM REACTORS
+# POPULATION ANALYSIS OF CYANOBACTERIA IN ROTATING ALGAL BIOFILM REACTORS
 
-List of files within Registry:
-16S Analysis Files
+## List of files within Registry:
+### 16S Analysis Files
 16S.sh – Executable file that sends the 16S batch file to the high performance computing center.
 16S.oligos – File that contains the 16S primers. Used by the 16S batch file.
 16S.batch – Classifies the 16S sequences using mothur and Silva.
@@ -19,7 +19,7 @@ tax_versus.R – Compares the mothur and DADA2 analysis results for the 16S sequ
 16S_ D_betaD.R – Generates beta diversity graphs of 16S sequences from the DADA2 analysis.
 16S_ D_lefse.R – Generates LEfSe graphs for 16S sequences from the DADA2 analysis. Has commented sections that contain code that must be run through mothur to proceed.
 16S_ D_rarefaction.R – Generates rarefaction graphs of 16S sequences from the DADA2 analysis. Included a figure that is colored by section, as well as individual graphs for each section.
-18S Analysis Files
+### 18S Analysis Files
 18S.sh – Executable file that sends the 18S batch file to the high performance computing center.
 18S.oligos – File that contains the 18S primers. Used by the 18S batch file.
 18S.batch – Classifies the 18S sequences using mothur and Silva.
@@ -28,7 +28,7 @@ tax_versus.R – Compares the mothur and DADA2 analysis results for the 16S sequ
 18S_betaD.R – Generates beta diversity graphs of 18S sequences.
 18S_lefse.R – Generates LEfSe graphs for 18S sequences. Has commented sections that contain code that must be run through mothur to proceed.
 18S_rarefaction.R – Generates rarefaction graphs of 18S sequences. Included a figure that is colored by section, as well as individual graphs for each section.
-23S Analysis Files
+### 23S Analysis Files
 23S_DADA2.R – Classifies the pilot and control RABR 23S sequences using DADA2.
 A23S_DADA2.R – Classifies all remaining biofilm 23S sequences using DADA2. This includes the lab scale, CVWRF, greenhouse RABRs, and the trickling filter.
 23S_D_abund.R – Generates relative abundance graphs of 23S sequences. Was manually edited and rerun to select for each taxonomic level (Phylum, Class, Order, Family, Genus).
@@ -36,7 +36,7 @@ A23S_DADA2.R – Classifies all remaining biofilm 23S sequences using DADA2. Thi
 23S_D_betaD.R – Generates beta diversity graphs of 23S sequences.
 23S_D_lefse.R – Generates LEfSe graphs for 23S sequences. Has commented sections that contain code that must be run through mothur to proceed.
 23S_D_rarefaction.R – Generates rarefaction graphs of 23S sequences. Included a figure that is colored by section, as well as individual graphs for each section.
-ITS Analysis Files
+### ITS Analysis Files
 ITS.sh – Executable file that sends the ITS_fungi and ITS_euk batch files to the high performance computing center.
 ITS.oligos – File that contains the ITS primers. Used by the ITS_fungi and ITS_euk batch files.
 ITS_fungi.batch – Classifies the ITS sequences using mothur and Silva and PR2.
