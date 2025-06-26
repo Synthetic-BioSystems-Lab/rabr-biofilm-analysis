@@ -1,4 +1,16 @@
 # rabr-biofilm-analysis
+
+## Overview
+What the project does
+Why the project is useful
+## Installation
+How users can get started with the project
+Where users can get help with your project
+Who maintains and contributes to the project
+
+
+
+
 # POPULATION ANALYSIS OF CYANOBACTERIA IN ROTATING ALGAL BIOFILM REACTORS
 
 ## List of files within Registry:
