@@ -21,7 +21,7 @@ summary.seqs(fasta=current, count=current)
 # screen sequences 
 # input fasta file = 16S.trim.contigs.unique.align 
 # input count file = 16S.trim.contigs.count_table 
-screen.seqs(fasta=current, count=current, mirnlength=400) 
+screen.seqs(fasta=current, count=current, minlength=400) 
 summary.seqs(fasta=current, count=current) 
 # 
 # # filter sequences to remove overhangs 
