@@ -185,7 +185,7 @@ LabvPilot %>%
 #in terminal
 # mothur\mothur
 #lefse(shared=16S.labvPilot.shared, design=16S.labvPilot.design, inputdir=DADA2\16SDADA2visualization\processed_data)
-#NOT WORKING
+
 
 
 # make plots

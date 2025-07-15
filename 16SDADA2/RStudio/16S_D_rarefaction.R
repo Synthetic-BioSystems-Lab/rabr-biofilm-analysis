@@ -130,58 +130,66 @@ ggsave("16S_D_plots/16SD_rarefaction_color.tiff", width=7, height=4)
 # pilot vs labRABR vs TF vs GH vs 
 # Rarefaction
 
-Lab_RABRs <- c("13_R27_11_3_21_16S", "17_R36_10_28_21_16S", "19_R43_11_15_21_16S",
-"11_R45_10_18_21_16S", "16_R45_11_15_21", "14_R46_11_5_21_16S",
-"20_R58_10_28_21_16S", "18_R60_11_21_16S", "12_R60_11_15_21_16S", 
-"15_R7_11_15_21_16S", "21_R72_11_15_21_16S")
+Lab_RABRs <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+               "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+               "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+               "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S")
 
 Pilot <- c("10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S", "S1_16S", 
            "S2_16S", "S3_16S")
 
-TF <- c("3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S", "TF_7_6_21",
-        "TF_9_11_21", "TF_11_9_21_R1")
+TF <- c("TF_5_25_22_16S", "TF_6_9_22_16S", "TF_6_22_22_16S", 
+        "TF_7_6_21_16S", "TF_9_11_21_16S", "TF_11_9_21_16S")
 
 
-CVWRF <- c("1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S")
+CVWRF <- c("CVWRF_PR_6_9_22_16S", "CVWRF_PSR_6_22_22_16S")
 
-GH <- c("2_GHR_6_15_22_16S", "6_GHR_5_1_22_16S")
+GH <- c("GHR_6_15_22_16S", "GHR_5_1_22_16S")
 
 
 Control <- c("C1_16S", "C2_16S")
 
+rare <- function(title, saved, samples) {
+  loc_shared_df <- shared %>%
+    filter(sample_id %in% samples) %>%
+    as.data.frame()
+  
+  rownames(loc_shared_df) <- loc_shared_df$Group
+  loc_shared_df <- loc_shared_df[, -1]
+  
+  # plot
+  rarecurve_data <- rarecurve(loc_shared_df, step=100)
+  
+  DF <- map_dfr(rarecurve_data, bind_rows) %>%
+    bind_cols(Group = rownames(loc_shared_df), .)  %>%
+    pivot_longer(-Group) %>%
+    mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
+    select(-name)
+  
+  ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
+    geom_line() +
+    #geom_text(aes(label=Group),
+              #data = DF %>% filter(n_seqs == median(n_seqs)),
+              #nudge_x = 0.35, 
+              #size = 4) +
+    theme_classic() +
+    scale_y_continuous(expand=c(0,0)) +
+    labs(x="Number of Sequences", y="Number of OTUs", 
+         title=paste("Rarefaction Curves for ", title, sep="")) +
+    theme(plot.title=element_text(hjust=0.5),
+          legend.text = element_markdown(),
+          legend.key.size = unit(10, "pt"),
+          strip.background = element_blank(),
+          strip.placement="outside",
+          strip.text.x = element_markdown())
+  
+  ggsave(paste("16S_D_plots/16SD_rarefaction_", saved, ".tiff", sep=""), width=5, height=4)
+}
 
-loc_shared_df <- shared %>%
-  filter(sample_id %in% TF) %>%
-  as.data.frame()
-
-rownames(loc_shared_df) <- loc_shared_df$Group
-loc_shared_df <- loc_shared_df[, -1]
-
-# plot
-rarecurve_data <- rarecurve(loc_shared_df, step=100)
-
-DF <- map_dfr(rarecurve_data, bind_rows) %>%
-  bind_cols(Group = rownames(loc_shared_df), .)  %>%
-  pivot_longer(-Group) %>%
-  mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
-  select(-name)
-
-ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
-  geom_line() +
-  #geom_text(aes(label=Group),
-            #data = DF %>% filter(n_seqs == median(n_seqs)),
-            #nudge_x = 0.35, 
-            #size = 4) +
-  theme_classic() +
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Number of Sequences", y="Number of OTUs", 
-       title="Rarefaction Curves for Control Samples") +
-  theme(plot.title=element_text(hjust=0.5),
-        legend.text = element_markdown(),
-        legend.key.size = unit(10, "pt"),
-        strip.background = element_blank(),
-        strip.placement="outside",
-        strip.text.x = element_markdown())
-
-ggsave("16S_D_plots/16SD_rarefaction_TF.tiff", width=5, height=4)
+rare("Lab RABRs", "81RABR", Lab_RABRs)
+rare("Pilot RABR", "pilot", Pilot)
+rare("Trickling Filter", "TF", TF)
+rare("CVWRF RABR", "CVWRF", CVWRF)
+rare("Green House RABRs", "GH", GH)
+rare("Control Samples", "Control", Control)
 
