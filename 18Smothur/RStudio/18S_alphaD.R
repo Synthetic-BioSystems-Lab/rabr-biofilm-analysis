@@ -230,7 +230,7 @@ all_metadata_alpha %>%
                     labels=labels,
                     values=c(Pilot_color, CVWRF_color, Labrabr_color, TF_color, GHR_color, Control_color)) +
   theme_classic() +
-  ylim(0, 25) +
+  ylim(0, 20) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
 
 ggsave("18Spilotv2/18Splots/18S_alpha_div_all_sections.tiff", width=5, height=4)
@@ -279,7 +279,7 @@ all_metadata_alpha %>%
                     labels=c("pilot", "81RABR"),
                     values=c(Pilot_color, labRABR_color)) +
   theme_classic() +
-  ylim(0, 25) +
+  ylim(0, 20) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
 
 ggsave("18Spilotv2/18Splots/18S_alpha_div_pilotv81.tiff", width=5, height=4)

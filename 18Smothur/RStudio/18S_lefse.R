@@ -151,7 +151,7 @@ LabvPilot %>%
 #in terminal
 # mothur\mothur
 #lefse(shared=18S.labvPilot.shared, design=18S.labvPilot.design, inputdir=18Spilotv2\processed_data)
-#NOT WORKING
+
 
 
 # make plots
@@ -229,7 +229,7 @@ TFvPilot %>%
 #in terminal
 # mothur\mothur
 #lefse(shared=18S.TFvPilot.shared, design=18S.TFvPilot.design, inputdir=18Spilotv2\processed_data)
-#NOT WORKING
+
 
 
 # make plots
@@ -307,7 +307,7 @@ CVWRFvPilot %>%
 #in terminal
 # mothur\mothur
 #lefse(shared=18S.CVWRFvPilot.shared, design=18S.CVWRFvPilot.design, inputdir=18Spilotv2\processed_data)
-#NOT WORKING
+
 
 
 # make plots

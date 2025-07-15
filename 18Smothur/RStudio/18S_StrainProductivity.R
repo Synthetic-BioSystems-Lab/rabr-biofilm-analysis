@@ -11,7 +11,7 @@ final_shared <- "18Spilotv2/final_p0.asv.shared"
 final_tax <- "18Spilotv2/final_p0.asv.0.03.cons.taxonomy"
 
 gather_metadata <- function(target, t2, t3, page) {
-  read_excel("18Spilot/18S_metadata.xlsx", sheet=page) %>%
+  read_excel("18Spilotv2/18S_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target, t2, t3)
@@ -55,7 +55,9 @@ otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='
 #function
 tax = c("Agaricomycotina", "Chlorellales", "Hypotrichia")
 lvl = "order"
-RA_Prod <- function(lvl, tax) {
+xcor = 3.2
+ycor = 'top'
+RA_Prod <- function(lvl, tax, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     group_by(section, sample_id, taxon, date, productivity) %>%
@@ -99,7 +101,7 @@ RA_Prod <- function(lvl, tax) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor() +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("18Spilotv2/18Splots/18S_RAvsProd_", lvl, ".tiff", sep=""), width=7, height=5)
@@ -109,8 +111,9 @@ RA_Prod <- function(lvl, tax) {
 tax = c("Agaricomycotina", "Chlorellales", "Hypotrichia")
 lvl = "order"
 rabr = 'pilot'
-x_spot = 3.2
-RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
+xcor = 3.2
+ycor = 'top'
+RA_Prod_RABR <- function(lvl, tax, rabr, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     filter(section==rabr) %>%
@@ -155,7 +158,7 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor() +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("18Spilotv2/18Splots/18S_RAvsProd_", lvl, "_", rabr, ".tiff", sep=""), width=7, height=5)
@@ -164,25 +167,25 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
 
 
 #"domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"
-RA_Prod("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"))
-RA_Prod("family", c("Chlorellales_X", "Insecta", "Oxytrichidae", "Pezizomycetes", "Platyophryida", "Sphaeropleales_X", "Tremellomycetes"))
-RA_Prod("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"))
-RA_Prod("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Colpodea", "Spirotrichea", "Trebouxiophyceae"))
-RA_Prod("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"))
-RA_Prod("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"))
-RA_Prod("supergroup", c("Archaeplastida", "Obazoa", "TSAR"))
+RA_Prod("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"), 5, 'top')
+RA_Prod("family", c("Chlorellales_X", "Oxytrichidae", "Pezizomycetes", "Sphaeropleales_X", "Tremellomycetes"),3.5, 'top')
+RA_Prod("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"),15, 'center')
+RA_Prod("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Spirotrichea", "Trebouxiophyceae"), 15, 'top')
+RA_Prod("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"), 3, 'top')
+RA_Prod("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"), 3, 'top')
+RA_Prod("supergroup", c("Archaeplastida", "Obazoa", "TSAR"), 3, 'top')
 
-RA_Prod_RABR("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"), 'pilot', 3.2)
-RA_Prod_RABR("family", c("Chlorellales_X", "Insecta", "Oxytrichidae", "Pezizomycetes", "Platyophryida", "Sphaeropleales_X", "Tremellomycetes"), 'pilot', 3.2)
-RA_Prod_RABR("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"), 'pilot', 3.2)
-RA_Prod_RABR("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Colpodea", "Spirotrichea", "Trebouxiophyceae"), 'pilot', 3.2)
-RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"), 'pilot', 3.2)
-RA_Prod_RABR("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"), 'pilot', 3.2)
-RA_Prod_RABR("supergroup", c("Archaeplastida", "Obazoa", "TSAR"), 'pilot', 3.2)
-RA_Prod_RABR("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"), '81RABR', 16)
-RA_Prod_RABR("family", c("Chlorellales_X", "Insecta", "Oxytrichidae", "Pezizomycetes", "Platyophryida", "Sphaeropleales_X", "Tremellomycetes"), '81RABR', 16)
-RA_Prod_RABR("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"), '81RABR', 16)
-RA_Prod_RABR("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Colpodea", "Spirotrichea", "Trebouxiophyceae"), '81RABR', 16)
-RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"), '81RABR', 16)
-RA_Prod_RABR("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"), '81RABR', 16)
-RA_Prod_RABR("supergroup", c("Archaeplastida", "Obazoa", "TSAR"), '81RABR', 16)
+RA_Prod_RABR("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"), 'pilot', 0.5, 'top')
+RA_Prod_RABR("family", c("Chlorellales_X", "Oxytrichidae", "Pezizomycetes", "Sphaeropleales_X", "Tremellomycetes"), 'pilot', 2, 'top')
+RA_Prod_RABR("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"), 'pilot', 2, 'top')
+RA_Prod_RABR("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Spirotrichea", "Trebouxiophyceae"), 'pilot', 1, 'top')
+RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"), 'pilot', 1.5, 'top')
+RA_Prod_RABR("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"), 'pilot', 2, 'top')
+RA_Prod_RABR("supergroup", c("Archaeplastida", "Obazoa", "TSAR"), 'pilot', 2, 'top')
+RA_Prod_RABR("genus", c("Kahliella", "Micractinium", "Psychoda", "Trichosporon"), '81RABR', 16, 'top')
+RA_Prod_RABR("family", c("Chlorellales_X", "Oxytrichidae", "Pezizomycetes", "Sphaeropleales_X", "Tremellomycetes"), '81RABR', 16, 'top')
+RA_Prod_RABR("order", c("Agaricomycotina", "Chlorellales", "Hypotrichia"), '81RABR', 16, 'top')
+RA_Prod_RABR("class", c("Ascomycota", "Basidiomycota", "Chlorophyceae", "Spirotrichea", "Trebouxiophyceae"), '81RABR', 16, 'top')
+RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Ciliophora", "Fungi", "Gyrista", "Metazoa"), '81RABR', 4, 'top')
+RA_Prod_RABR("division", c("Alveolata", "Chlorophyta", "Opisthokonta", "Stramenopiles"), '81RABR', 16, 'top')
+RA_Prod_RABR("supergroup", c("Archaeplastida", "Obazoa", "TSAR"), '81RABR', 16, 'top')

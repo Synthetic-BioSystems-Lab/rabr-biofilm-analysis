@@ -13,11 +13,11 @@ setwd("~/Miller Lab/Rscripts_PilotRABR")
 final_shared <- "18Spilotv2/final_p0.asv.shared"
 final_tax <- "18Spilotv2/final_p0.asv.0.03.cons.taxonomy"
 
-gather_metadata <- function(target, t2, t3, page) {
+gather_metadata <- function(target, t2, t3, t4, page) {
   read_excel("18Spilotv2/18S_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
-    select(sample, target, t2, t3)
+    select(sample, target, t2, t3, t4)
 }
 
 #import asv counts
@@ -34,10 +34,10 @@ taxonomy <- read_tsv(final_tax) %>%
   separate(taxonomy, into=c("domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"), sep = ";")
 
 # import metadata
-all_metadata <- gather_metadata("section", "date", "label", 1) 
+all_metadata <- gather_metadata("section", "date", "label", "order", 1) 
 
 for(i in 2:6) {
-  all_metadata <- dplyr::bind_rows(all_metadata, gather_metadata("section", "date", "label", i))
+  all_metadata <- dplyr::bind_rows(all_metadata, gather_metadata("section", "date", "label", "order", i))
 }
 
 all_metadata %>%
@@ -59,27 +59,35 @@ asv_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='
 RA <- function(tax, cut) {
   taxon_rel_abund <- asv_rel_abund %>%
     filter(level==tax) %>%
-    group_by(section, sample_id, taxon, date, label) %>%
+    group_by(section, sample_id, taxon, date, label, order) %>%
     summarize(rel_abund = 100*sum(rel_abund), .groups = "drop") %>%
     # group_by(sample_id, taxon, section) %>%
     # summarize(mean_rel_abund = 100*mean(rel_abund), .groups = "drop") %>%
     mutate(taxon = str_replace(taxon, "(.*)_unclassified", "Unclassified *\\1*"),
            taxon = str_replace(taxon, "^(\\S*)$", "*\\1*")) 
   
-  #set aside other
-  taxon_pool <- taxon_rel_abund %>%
-    group_by(section, taxon, rel_abund) %>%
-    summarize(mean=mean(rel_abund), .groups="drop") %>%
-    group_by(taxon) %>%
-    summarize(pool = max(mean) < cut, 
-              mean = mean(mean),
-              .groups="drop")
+  taxon_rel_abund <- taxon_rel_abund %>%
+    mutate(section = str_replace_all(section, "control", "1_control")) %>%
+    mutate(section = str_replace_all(section, "81RABR", "2_81RABR")) %>%
+    mutate(section = str_replace_all(section, "GHR", "3_GHR")) %>%
+    mutate(section = str_replace_all(section, "pilot", "4_pilot")) %>%
+    mutate(section = str_replace_all(section, "CVWRF", "5_CVWRF")) %>%
+    mutate(section = str_replace_all(section, "TF", "6_TF"))
   
-  sample_order <- all_metadata %>%
-    #filter(taxon == "*Brevundimonas*") %>%
-    arrange(date) %>%
-    mutate(order = 1:nrow(.)) %>%
-    select(sample, order, date)
+  #set aside other
+  # taxon_pool <- taxon_rel_abund %>%
+  #   group_by(section, taxon, rel_abund) %>%
+  #   summarize(mean=mean(rel_abund), .groups="drop") %>%
+  #   group_by(taxon) %>%
+  #   summarize(pool = max(mean) < cut, 
+  #             mean = mean(mean),
+  #             .groups="drop")
+  
+  # sample_order <- all_metadata %>%
+  #   #filter(taxon == "*Brevundimonas*") %>%
+  #   arrange(date) %>%
+  #   mutate(order = 1:nrow(.)) %>%
+  #   select(sample, order, date)
   
   # RvsS <- taxon_rel_abund %>%
   #   filter(sample_id %in% c("11S_18S", "11R_18S")) %>%
@@ -90,26 +98,27 @@ RA <- function(tax, cut) {
   #   mutate(diff = (Srel_abund - Rrel_abund) / Rrel_abund) %>%
   #   ungroup() 
   
-  pretty <- c("pilot" = "Pilot-scale RABRs",
-              "81RABR" = "Lab-scale RABRs",
-              "control" = "Control",
-              "CVWRF" = "CVWRF",
-              "GHR" = "GHR",
-              "TF" = "TF")
+  pretty <- c("4_pilot" = "Pilot-scale RABRs",
+              "2_81RABR" = "Lab-scale RABRs",
+              "1_control" = "Control",
+              "5_CVWRF" = "CVWRF",
+              "3_GHR" = "GHR",
+              "6_TF" = "TF")
   #<br>
   write.csv(taxon_rel_abund,paste("18Spilotv2/18Scsvs/18S_abund_", tax, ".csv", sep=""), row.names = FALSE)
   #assemble others and make RA stacked bar plot
-  prep <- inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%
+  prep <- taxon_rel_abund %>% # inner_join(taxon_rel_abund, taxon_pool, by="taxon") %>%
     #filter(sample_id %in% c("S1_18S", "S2_18S", "S3_18S")) %>%
-    mutate(taxon = if_else(pool, "Other", taxon)) %>%
-    group_by(sample_id, label, section, taxon) %>%
+    mutate(taxon = if_else(rel_abund < cut, "Other", taxon)) %>%
+    group_by(sample_id, label, section, taxon, order) %>%
     summarize(rel_abund = sum(rel_abund), .groups = "drop") %>%
     # mutate(taxon = factor(taxon),
     #        taxon = fct_reorder(taxon, mean, .desc=TRUE),
     #        taxon = fct_shift(taxon, n=1)) %>%
-    inner_join(., sample_order, by=c("sample_id"="sample")) %>%
+    #inner_join(., sample_order, by=c("sample_id"="sample")) %>%
     mutate(label = factor(label),
-           label= fct_reorder(label, order))
+           label= fct_reorder(label, order)) %>% #%>% select !other
+    filter(taxon != "Other")
   
   
   
@@ -130,9 +139,10 @@ RA <- function(tax, cut) {
           axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0),
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
-          strip.text = element_markdown())
+          strip.text = element_markdown()) +
+    ylim(0, 100)
   
-  ggsave(paste("18Spilotv2/18Splots/18S_stacked_bar_",tax,".tiff", sep=""), width=9, height=4)
+  ggsave(paste("18Spilotv2/18Splots/18S_stacked_bar_",tax,".tiff", sep=""), width=13, height=4)
   
   # Relative Abundance
   
@@ -175,15 +185,25 @@ RA <- function(tax, cut) {
       strip.text = element_markdown())
   #coord_fixed(ratio = 4)
   
-  ggsave(paste("18Spilotv2/18Splots/18S_heat_map_",tax,".tiff", sep=""), width=9, height=4)
+  ggsave(paste("18Spilotv2/18Splots/18S_heat_map_",tax,".tiff", sep=""), width=13, height=4)
 }
 
 #"domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"
 RA("supergroup", 5)
 RA("division", 5)
 RA("subdivision", 5)
-RA("class", 15)
-RA("order", 20)
-RA("family", 20)
-RA("genus", 20)
-RA("species", 20)
+RA("class", 5)
+RA("order", 5)
+RA("family", 5)
+RA("genus", 5)
+RA("species", 5)
+
+# RA("supergroup", 5)
+# RA("division", 5)
+# RA("subdivision", 5)
+# RA("class", 15)
+# RA("order", 20)
+# RA("family", 20)
+# RA("genus", 20)
+# RA("species", 20)
+
