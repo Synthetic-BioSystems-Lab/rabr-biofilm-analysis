@@ -105,12 +105,19 @@ dli_pilot_metadata <- gather_metadata("dli_level","date", "label", 1) %>%
                        levels=c("high",
                                 "low")))
 
-alpha_diversity <- read_tsv("16Spilot/final.opti_mcc.groups.ave-std.summary") %>%
-  filter(method=="ave") %>%
-  select(-label, -method)
+# alpha_diversity <- read_tsv("16Spilot/final.opti_mcc.groups.ave-std.summary") %>%
+#   filter(method=="ave") %>%
+#   select(-label, -method)
+
+alpha_diversity <- otu_counts %>%
+  group_by(sample_id) %>%
+  summarize(sobs = richness(count),
+            shannon = shannon(count),
+            simpson=simpson(count),
+            invsimpson = 1/simpson)
 
 dli_metadata_alpha <- inner_join(dli_pilot_metadata, alpha_diversity,
-                                  by=c('sample'='group'))
+                                  by=c('sample'='sample_id'))
 
 #Five_color <- "#BEBEBE"
 high_color <- "#0000FF"
@@ -157,12 +164,12 @@ ggsave("16Spilot/16Splots/16S_alpha_div_pilot_dli.tiff", width=5, height=4)
 # Amanda Method all Samples
 #EXPAND METADATA
 
-alpha_diversity <- read_tsv("16Spilot/final.opti_mcc.groups.ave-std.summary") %>%
-  filter(method=="ave") %>%
-  select(-label, -method)
+# alpha_diversity <- read_tsv("16Spilot/final.opti_mcc.groups.ave-std.summary") %>%
+#   filter(method=="ave") %>%
+#   select(-label, -method)
 
 all_metadata_alpha <- inner_join(all_metadata, alpha_diversity,
-                                 by=c('sample'='group'))
+                                 by=c('sample'='sample_id'))
 
 Pilot_color <- "#BEBEBE"
 CVWRF_color <- "#0000FF"
@@ -229,21 +236,21 @@ all_metadata_alpha %>%
                     labels=labels,
                     values=c(Pilot_color, CVWRF_color, Labrabr_color, TF_color, GHR_color, Control_color)) +
   theme_classic() +
-  ylim(0, 25) +
+  #ylim(0,25) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_alpha_div_all_sections.tiff", width=5, height=4)
 
 ## Amanda Method pilot vs 81RABR
-all_metadata %>%
-  mutate(section = factor(section, levels=c("pilot", "81RABR")))
+all_metadata <- all_metadata_alpha %>%
+  mutate(section = factor(section, levels=c("4_pilot", "2_81RABR")))
 
 #EXPAND METADATA
 
 p_metadata_alpha <- all_metadata %>%
-  filter(section == "pilot")
+  filter(section == "4_pilot")
 all_metadata_alpha <- all_metadata %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   rbind(.,p_metadata_alpha)
 
 Pilot_color <- "#BEBEBE"
@@ -254,11 +261,11 @@ all_count <- all_metadata_alpha %>%
   dplyr::count(section)
 
 pilot_n <- all_count %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   pull(n)
 
 labRABR_n <- all_count %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   pull(n)
 
 # box plot with jitters
@@ -271,14 +278,14 @@ all_metadata_alpha %>%
   geom_jitter(show.legend=FALSE, width=0.25, shape=21, color="black") +
   labs(x=NULL, y="Inverse Simpson Index") +
   ggtitle("Standard vs Lab RABR Alpha Diversity by Section") +
-  scale_x_discrete(breaks=c("pilot", "81RABR"),
+  scale_x_discrete(breaks=c("4_pilot", "2_81RABR"),
                    labels=c("pilot", "81RABR")) +
   scale_fill_manual(name=NULL,
-                    breaks=c("pilot", "81RABR"),
+                    breaks=c("4_pilot", "2_81RABR"),
                     labels=c("pilot", "81RABR"),
                     values=c(Pilot_color, labRABR_color)) +
   theme_classic() +
-  ylim(0, 25) +
+  #ylim(0, 25) +
   theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_alpha_div_pilotv81.tiff", width=5, height=4)
@@ -287,7 +294,7 @@ ggsave("16Spilot/16Splots/16S_alpha_div_pilotv81.tiff", width=5, height=4)
 prod_metadata1 <- gather_metadata("section", "dry_productivity_substratum", "date", 1) %>%
   rename(productivity = dry_productivity_substratum)
 prod_meta_alpha1 <- inner_join(prod_metadata1, alpha_diversity,
-                              by=c('sample'='group'))
+                              by=c('sample'='sample_id'))
 prod_meta_alpha1 %>%
   ggplot(aes(x=productivity, y=invsimpson)) +
   geom_point() + 
@@ -303,7 +310,7 @@ ggsave("16Spilot/16Splots/16S_alpha_div_vPilot_Productivity.tiff", width=3.5, he
 #lab rabr productivity v invsimpson
 prod_metadata2 <- gather_metadata("section", "productivity", "date", 2)
 prod_meta_alpha2 <- inner_join(prod_metadata2, alpha_diversity,
-                              by=c('sample'='group'))
+                              by=c('sample'='sample_id'))
 prod_meta_alpha2 %>%
   ggplot(aes(x=productivity, y=invsimpson)) +
   geom_point() + 
@@ -319,7 +326,7 @@ ggsave("16Spilot/16Splots/16S_alpha_div_v81RABR_Productivity.tiff", width=3.5, h
 
 # pilot RABR date productivity
 date_meta_alpha <- all_metadata_alpha %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   select(sample, date, invsimpson)
 
 RnS <- date_meta_alpha %>%

@@ -54,7 +54,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -120,11 +120,10 @@ ggplot(date_star, aes(x=NMDS1, xend=centroid1,
 ggsave("16Spilot/16Splots/16S_nmds_all_date.tiff", width=5, height=4)
 
 #Beta Diversity PilotvLabRABR
-samples_wanted <- c("11_R45_10_18_21_16S", "12_R60_11_15_21_16S", "13_R27_11_3_21_16S",
-                    "14_R46_11_5_21_16S", "15_R7_11_15_21_16S", "16_R45_11_15_21",
-                    "17_R36_10_28_21_16S", "18_R60_11_21_16S", "19_R43_11_15_21_16S",
-                    "20_R58_10_28_21_16S", "21_R72_11_15_21_16S", "R1_S2_15_10_4_21",
-                    "R1_S2_15_10_12_21", "R3_S1_58_10_4_21", "10_5_16S", "19_16S",
+samples_wanted <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                    "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                    "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                    "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S", "10_5_16S", "19_16S",
                     "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S")
 
 
@@ -151,7 +150,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -207,20 +206,19 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_pilotv81RABR.tiff", width=5, height=4)
 
 #Beta Diversity PilotvLabRABRvTF
-samples_wanted <- c("11_R45_10_18_21_16S", "12_R60_11_15_21_16S", "13_R27_11_3_21_16S",
-                    "14_R46_11_5_21_16S", "15_R7_11_15_21_16S", "16_R45_11_15_21",
-                    "17_R36_10_28_21_16S", "18_R60_11_21_16S", "19_R43_11_15_21_16S",
-                    "20_R58_10_28_21_16S", "21_R72_11_15_21_16S", "R1_S2_15_10_4_21",
-                    "R1_S2_15_10_12_21", "R3_S1_58_10_4_21", "10_5_16S", "19_16S",
+samples_wanted <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                    "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                    "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                    "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S", "10_5_16S", "19_16S",
                     "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S",
-                    "3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S",
-                    "TF_7_6_21", "TF_9_11_21", "TF_11_9_21_R1")
+                    "TF_5_25_22_16S", "TF_6_9_22_16S", "TF_6_22_22_16S", 
+                    "TF_7_6_21_16S", "TF_9_11_21_16S", "TF_11_9_21_16S")
 
 
 all_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
@@ -246,7 +244,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -302,21 +300,20 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_pilotv81RABRvTF.tiff", width=5, height=4)
 
 #Beta Diversity PilotvLabRABRvTFvCVWRF
-samples_wanted <- c("11_R45_10_18_21_16S", "12_R60_11_15_21_16S", "13_R27_11_3_21_16S",
-                    "14_R46_11_5_21_16S", "15_R7_11_15_21_16S", "16_R45_11_15_21",
-                    "17_R36_10_28_21_16S", "18_R60_11_21_16S", "19_R43_11_15_21_16S",
-                    "20_R58_10_28_21_16S", "21_R72_11_15_21_16S", "R1_S2_15_10_4_21",
-                    "R1_S2_15_10_12_21", "R3_S1_58_10_4_21", "10_5_16S", "19_16S",
+samples_wanted <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                    "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                    "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                    "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S", "10_5_16S", "19_16S",
                     "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S",
-                    "3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S",
-                    "TF_7_6_21", "TF_9_11_21", "TF_11_9_21_R1",
-                    "1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S")
+                    "TF_5_25_22_16S", "TF_6_9_22_16S", "TF_6_22_22_16S", 
+                    "TF_7_6_21_16S", "TF_9_11_21_16S", "TF_11_9_21_16S",
+                    "CVWRF_PR_6_9_22_16S", "CVWRF_PSR_6_22_22_16S")
 
 
 all_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
@@ -342,7 +339,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -398,22 +395,21 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
         legend.position = c(0.85, 0.9),
         legend.background = element_rect(fill="NA",
                                          color="black"),
-        legend.margin = margin(t=-2, r=3, b=3, l=3),
+        legend.margin = margin(t=2, r=3, b=3, l=3),
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_pilotv81RABRvTFvCVWRF.tiff", width=5, height=4)
 
 #Beta Diversity PilotvLabRABRvTFvCVWRF
-samples_wanted <- c("11_R45_10_18_21_16S", "12_R60_11_15_21_16S", "13_R27_11_3_21_16S",
-                    "14_R46_11_5_21_16S", "15_R7_11_15_21_16S", "16_R45_11_15_21",
-                    "17_R36_10_28_21_16S", "18_R60_11_21_16S", "19_R43_11_15_21_16S",
-                    "20_R58_10_28_21_16S", "21_R72_11_15_21_16S", "R1_S2_15_10_4_21",
-                    "R1_S2_15_10_12_21", "R3_S1_58_10_4_21", "10_5_16S", "19_16S",
+samples_wanted <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                    "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                    "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                    "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S", "10_5_16S", "19_16S",
                     "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S",
-                    "3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S",
-                    "TF_7_6_21", "TF_9_11_21", "TF_11_9_21_R1",
-                    "1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S",
-                    "2_GHR_6_15_22_16S", "6_GHR_5_1_22_16S")
+                    "TF_5_25_22_16S", "TF_6_9_22_16S", "TF_6_22_22_16S", 
+                    "TF_7_6_21_16S", "TF_9_11_21_16S", "TF_11_9_21_16S",
+                    "CVWRF_PR_6_9_22_16S", "CVWRF_PSR_6_22_22_16S",
+                    "GHR_6_15_22_16S", "GHR_5_1_22_16S")
 
 
 all_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
@@ -439,7 +435,7 @@ all_shared <- all_shared[, -1]
 all_shared <- as.matrix(all_shared)
 
 
-all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=20073)
+all_dist <- avgdist(all_shared, dmethod="bray", iterations=1000, sample=2073)
 all_nmds <- metaMDS(all_dist) #low stress > insufficient data?
 
 all_scores <- scores(all_nmds) %>%
@@ -503,7 +499,7 @@ ggplot(all_star, aes(x=NMDS1, xend=centroid1,
 ggsave("16Spilot/16Splots/16S_nmds_pilotv81RABRvTFvCVWRFvGH.tiff", width=5, height=4)
 
 # All samples nmds
-#Beta Diversity PilotvLabRABR
+#Beta Diversity
 all_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
   select(Group, starts_with("Otu")) %>%
   #filter(Group %in% samples_wanted) %>%
@@ -592,11 +588,10 @@ ggsave("16Spilot/16Splots/16S_nmds_all.tiff", width=5, height=4)
 
 # Temp comparison
 # select for Lab samples
-samples_wanted <- c("11_R45_10_18_21_16S", "12_R60_11_15_21_16S", "13_R27_11_3_21_16S",
-                    "14_R46_11_5_21_16S", "15_R7_11_15_21_16S", "16_R45_11_15_21",
-                    "17_R36_10_28_21_16S", "18_R60_11_21_16S", "19_R43_11_15_21_16S",
-                    "20_R58_10_28_21_16S", "21_R72_11_15_21_16S", "R1_S2_15_10_4_21",
-                    "R1_S2_15_10_12_21", "R3_S1_58_10_4_21")
+samples_wanted <- c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                    "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                    "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                    "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S")
 
 temp_shared <- read_tsv("16Spilot/final.opti_mcc.shared") %>%
   select(Group, starts_with("Otu")) %>%
@@ -630,7 +625,7 @@ temp_metadata_nmds <- inner_join(temp_metadata, temp_scores, by=c('sample'='Grou
   mutate(temp = factor(temp,
                               levels=c("10",
                                        "20",
-                                       "30")))
+                                       "25")))
 
 T1_color <- "#BEBEBE"
 T2_color <- "#0000FF"
@@ -661,18 +656,18 @@ ggplot(temp_star, aes(x=NMDS1, xend=centroid1,
   scale_color_manual(name=NULL, 
                      breaks=c("10",
                               "20",
-                              "30"),
+                              "25"),
                      labels=c("10 C",
                               "20 C",
-                              "30 C"),
+                              "25 C"),
                      values=c(T1_color, T2_color, T3_color)) +
   scale_fill_manual(name=NULL, 
                     breaks=c("10",
                              "20",
-                             "30"),
+                             "25"),
                     labels=c("10 C",
                              "20 C",
-                             "30 C"),
+                             "25 C"),
                     values=c(T1_color, T2_color, T3_color)) +
   theme_classic() + xlim(-0.75, 0.75) + ylim(-0.75, 0.75) +
   theme(legend.key.size = unit(0.35, "cm"),
@@ -683,3 +678,4 @@ ggplot(temp_star, aes(x=NMDS1, xend=centroid1,
         plot.title=element_text(hjust=0.5))
 
 ggsave("16Spilot/16Splots/16S_nmds_lab_temp.tiff", width=5, height=4)
+

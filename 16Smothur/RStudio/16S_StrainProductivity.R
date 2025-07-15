@@ -55,7 +55,9 @@ otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='
 #function
 tax = c("Synechococcus_PCC-7942", "Tychonema_CCAP_1459-11B", "Symphothece_PCC-7002")
 lvl = "genus"
-RA_Prod <- function(lvl, tax) {
+xcor = 1
+ycor = 'top'
+RA_Prod <- function(lvl, tax, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     group_by(section, sample_id, taxon, date, productivity) %>%
@@ -101,7 +103,7 @@ RA_Prod <- function(lvl, tax) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor(label.x=16, label.y.npc='center') +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +  
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("16Spilot/16Splots/16S_RAvsProd_", lvl, ".tiff", sep=""), width=7, height=5)
@@ -110,8 +112,8 @@ RA_Prod <- function(lvl, tax) {
 tax = c("Synechococcus_PCC-7942",  "Symphothece_PCC-7002")
 lvl = "genus"
 rabr = 'pilot'
-x_spot = 3.2
-RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
+
+RA_Prod_RABR <- function(lvl, tax, rabr, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(section==rabr) %>%
     filter(level==lvl) %>%
@@ -158,27 +160,27 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor(label.x=x_spot, label.y.npc='center') +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("16Spilot/16Splots/16S_RAvsProd_", lvl, "_", rabr, ".tiff", sep=""), width=7, height=5)
   
 }
 
-RA_Prod("genus", c("Synechococcus_PCC-7942", "Tychonema_CCAP_1459-11B", "Symphothece_PCC-7002"))
-RA_Prod("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"))
-RA_Prod("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"))
-RA_Prod("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"))
-RA_Prod("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"))
+RA_Prod("genus", c("Synechococcus_PCC-7942", "Tychonema_CCAP_1459-11B", "Symphothece_PCC-7002"), 15, 'top')
+RA_Prod("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"), 15, 'top')
+RA_Prod("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"), 15, 'center')
+RA_Prod("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"), 15, 'center')
+RA_Prod("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"), 15, 'center')
 
-RA_Prod_RABR("genus", c("Synechococcus_PCC-7942", "Symphothece_PCC-7002"), 'pilot', 3.2)
-RA_Prod_RABR("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"), 'pilot', 3.2)
-RA_Prod_RABR("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"), 'pilot', 3.2)
-RA_Prod_RABR("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"), 'pilot', 3.2)
-RA_Prod_RABR("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"), 'pilot', 3.2)
-RA_Prod_RABR("genus", c("Synechococcus_PCC-7942", "Tychonema_CCAP_1459-11B", "Symphothece_PCC-7002"), '81RABR', 16)
-RA_Prod_RABR("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"), '81RABR', 16)
-RA_Prod_RABR("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"), '81RABR', 16)
-RA_Prod_RABR("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"), '81RABR', 16)
-RA_Prod_RABR("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"), '81RABR', 16)
+RA_Prod_RABR("genus", c("Synechococcus_PCC-7942", "Symphothece_PCC-7002"), 'pilot', 0, 'top')
+RA_Prod_RABR("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"), 'pilot', 3.2, 'bottom')
+RA_Prod_RABR("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"), 'pilot', 0, 'center')
+RA_Prod_RABR("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"), 'pilot', 3.2, 'center')
+RA_Prod_RABR("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"), 'pilot', 3.2, 'center')
+RA_Prod_RABR("genus", c("Synechococcus_PCC-7942", "Tychonema_CCAP_1459-11B", "Symphothece_PCC-7002"), '81RABR', 16, 'top')
+RA_Prod_RABR("family", c("Burkholderiaceae", "Weeksellaceae", "Synechococcaceae"), '81RABR', 16, 'top')
+RA_Prod_RABR("order", c("Nostocales", "Betaproteobacteriales", "Flavobacteriales", "Synechococcales"), '81RABR', 16, 'center')
+RA_Prod_RABR("class", c("Alphaproteobacteria", "Bacteroidia", "Gammaproteobacteria", "Oxyphotobacteria"), '81RABR', 16, 'center')
+RA_Prod_RABR("phylum", c("Bacteroidetes", "Proteobacteria", "Cyanobacteria"), '81RABR', 16, 'center')
 

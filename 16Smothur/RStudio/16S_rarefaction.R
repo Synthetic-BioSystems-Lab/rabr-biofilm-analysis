@@ -1,6 +1,7 @@
 library(tidyverse) 
 library(vegan)
 library(ggtext)
+library(readxl)
 
 set.seed(1111)
 setwd("~/Miller Lab/Rscripts_PilotRABR")
@@ -16,8 +17,8 @@ loc_shared <- read_tsv("16Spilot/final.opti_mcc.0.03.subsample.shared") %>%
   mutate(total=sum(value)) %>% 
   filter(total != 0) %>%
   ungroup() %>%
-  select(-total) %>%
-  filter(Group != "C1_16S" & Group != "C2_16S")
+  select(-total) 
+  #filter(Group != "C1_16S" & Group != "C2_16S")
 
 loc_shared_df <- loc_shared %>%
   pivot_wider(names_from="name", values_from="value", values_fill = 0) %>%
@@ -110,75 +111,63 @@ ggsave("16Spilot/16Splots/16S_rarefaction_color.tiff", width=7, height=4)
 
 # pilot vs labRABR vs TF vs GH vs 
 # Rarefaction
-loc_shared <- read_tsv("16Spilot/final.opti_mcc.0.03.subsample.shared") %>%
-  select(Group, starts_with("Otu")) %>%
-  pivot_longer(-Group) %>%
-  group_by(Group) %>%
-  mutate(total=sum(value)) %>%
-  arrange(total) %>%
-  group_by(name) %>%
-  mutate(total=sum(value)) %>% 
-  filter(total != 0) %>%
-  ungroup() %>%
-  select(-total) %>%
-  filter(Group %in% c("C1_16S", "C2_16S"))
-
-# Lab RABRs
-# "13_R27_11_3_21_16S", "17_R36_10_28_21_16S", "19_R43_11_15_21_16S",
-# "11_R45_10_18_21_16S", "16_R45_11_15_21", "14_R46_11_5_21_16S",
-# "20_R58_10_28_21_16S", "18_R60_11_21_16S", "12_R60_11_15_21_16S", 
-# "15_R7_11_15_21_16S", "21_R72_11_15_21_16S"
-
-# Pilot
-# "10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S"
-
-# TF
-# "3_TF_5_25_22_16S", "7_TF_6_9_22_16S", "10_TF_6_22_22_16S", "TF_7_6_21", "TF_9_11_21", "TF_11_9_21_R1"
-
-
-# CVWRF
-# "1_CVWRF_PR_6_22_22_16S", "4_CVWRF_PSR_2_22_22_16S"
-
-# GH
-# "2_GHR_6_15_22_16S", "6_GHR_5_1_22_16S"
-
-
-# Control
-# "C1_16S", "C2_16S"
-
-
-loc_shared_df <- loc_shared %>%
-  pivot_wider(names_from="name", values_from="value", values_fill = 0) %>%
-  as.data.frame()
-
-rownames(loc_shared_df) <- loc_shared_df$Group
-loc_shared_df <- loc_shared_df[, -1]
-
-# plot
-rarecurve_data <- rarecurve(loc_shared_df, step=100)
-
-DF <- map_dfr(rarecurve_data, bind_rows) %>%
-  bind_cols(Group = rownames(loc_shared_df), .)  %>%
-  pivot_longer(-Group) %>%
-  mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
-  select(-name)
-
-ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
-  geom_line() +
-  #geom_text(aes(label=Group),
-            #data = DF %>% filter(n_seqs == median(n_seqs)),
-            #nudge_x = 0.35, 
-            #size = 4) +
-  theme_classic() +
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Number of Sequences", y="Number of OTUs", 
-       title="Rarefaction Curves for Control Samples") +
-  theme(plot.title=element_text(hjust=0.5),
-        legend.text = element_markdown(),
-        legend.key.size = unit(10, "pt"),
-        strip.background = element_blank(),
-        strip.placement="outside",
-        strip.text.x = element_markdown())
-
-ggsave("16Spilot/16Splots/16S_rarefaction_Control.tiff", width=5, height=4)
+rare <-function(section, samples){
+  loc_shared <- read_tsv("16Spilot/final.opti_mcc.0.03.subsample.shared") %>%
+    select(Group, starts_with("Otu")) %>%
+    pivot_longer(-Group) %>%
+    group_by(Group) %>%
+    mutate(total=sum(value)) %>%
+    arrange(total) %>%
+    group_by(name) %>%
+    mutate(total=sum(value)) %>% 
+    filter(total != 0) %>%
+    ungroup() %>%
+    select(-total) %>%
+    filter(Group %in% samples)
+  
+  loc_shared_df <- loc_shared %>%
+    pivot_wider(names_from="name", values_from="value", values_fill = 0) %>%
+    as.data.frame()
+  
+  rownames(loc_shared_df) <- loc_shared_df$Group
+  loc_shared_df <- loc_shared_df[, -1]
+  
+  # plot
+  rarecurve_data <- rarecurve(loc_shared_df, step=100)
+  
+  DF <- map_dfr(rarecurve_data, bind_rows) %>%
+    bind_cols(Group = rownames(loc_shared_df), .)  %>%
+    pivot_longer(-Group) %>%
+    mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
+    select(-name)
+  
+  ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
+    geom_line() +
+    #geom_text(aes(label=Group),
+              #data = DF %>% filter(n_seqs == median(n_seqs)),
+              #nudge_x = 0.35, 
+              #size = 4) +
+    theme_classic() +
+    scale_y_continuous(expand=c(0,0)) +
+    labs(x="Number of Sequences", y="Number of OTUs", 
+         title=paste("Rarefaction Curves for ", section, sep="")) +
+    theme(plot.title=element_text(hjust=0.5),
+          legend.text = element_markdown(),
+          legend.key.size = unit(10, "pt"),
+          strip.background = element_blank(),
+          strip.placement="outside",
+          strip.text.x = element_markdown())
+  
+  ggsave(paste("16Spilot/16Splots/16S_rarefaction_", section, ".tiff", sep=""), width=5, height=4)
+}
+rare("labRABR", c("R27_11_3_21_16S", "R36_10_28_21_16S", "R43_11_15_21_16S", 
+                  "R45_10_18_21_16S", "R45_11_15_21_16S", "R46_11_5_21_16S", 
+                  "R58_10_28_21_16S", "R60_11_1_21_16S", "R60_11_15_21_16S", 
+                  "R7_11_15_21_16S", "R72_11_15_21_16S", "R75_11_15_21_16S"))
+rare("pilot", c("10_5_16S", "19_16S", "26_16S", "11S_16S", "11R_16S", "S1_16S", "S2_16S", "S3_16S"))
+rare("TF", c("TF_5_25_22_16S", "TF_6_9_22_16S", "TF_6_22_22_16S", 
+             "TF_7_6_21_16S", "TF_9_11_21_16S", "TF_11_9_21_16S"))
+rare("CVWRF", c("CVWRF_PR_6_9_22_16S", "CVWRF_PSR_6_22_22_16S"))
+rare("GHR", c("GHR_6_15_22_16S", "GHR_5_1_22_16S"))
+rare("Control", c("C1_16S", "C2_16S"))
 
