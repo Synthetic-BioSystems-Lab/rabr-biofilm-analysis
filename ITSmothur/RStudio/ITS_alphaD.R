@@ -9,7 +9,7 @@ library(ggpubr)
 setwd("~/Miller Lab/Rscripts_PilotRABR")
 
 gather_metadata <- function(target, t2, t3, page) {
-  read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+  read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target, t2, t3)
@@ -30,7 +30,7 @@ name <- "pr2_euk"
 
 slow_alpha_div <- function(name) {
   #import otu counts
-  otu_counts <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
+  otu_counts <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) %>%
     select(-label, -numOtus) %>%
     pivot_longer(-Group, names_to = "otu", values_to = "count") %>%
     rename(sample_id = Group)
@@ -65,7 +65,7 @@ slow_alpha_div <- function(name) {
     geom_smooth() +
     facet_wrap(~metric, nrow=4, scales="free_y")
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div0_all.tiff", sep=""), width=8, height=8)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div0_all.tiff", sep=""), width=8, height=8)
   
   alpha_count %>%
     filter(section == "pilot") %>%
@@ -74,7 +74,7 @@ slow_alpha_div <- function(name) {
     geom_smooth() +
     facet_wrap(~metric, nrow=4, scales="free_y")
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div0_pilot.tiff", sep=""), width=8, height=8)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div0_pilot.tiff", sep=""), width=8, height=8)
   
   alpha_count %>%
     filter(section == "81RABR") %>%
@@ -83,7 +83,7 @@ slow_alpha_div <- function(name) {
     geom_smooth() +
     facet_wrap(~metric, nrow=4, scales="free_y")
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div0_81RABR.tiff", sep=""), width=8, height=8)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div0_81RABR.tiff", sep=""), width=8, height=8)
   
   alpha_count %>%
     filter(section == "TF") %>%
@@ -92,7 +92,7 @@ slow_alpha_div <- function(name) {
     geom_smooth() +
     facet_wrap(~metric, nrow=4, scales="free_y")
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div0_TF.tiff", sep=""), width=8, height=8)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div0_TF.tiff", sep=""), width=8, height=8)
   
   alpha_count %>%
     filter(section == "control") %>%
@@ -101,13 +101,13 @@ slow_alpha_div <- function(name) {
     geom_smooth() +
     facet_wrap(~metric, nrow=4, scales="free_y")
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div0_control.tiff", sep=""), width=8, height=8)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div0_control.tiff", sep=""), width=8, height=8)
 }
 
 alpha_div <- function(name) {
   # Amanda Method
   #import otu counts
-  otu_counts <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
+  otu_counts <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) %>%
     select(-label, -numOtus) %>%
     pivot_longer(-Group, names_to = "otu", values_to = "count") %>%
     rename(sample_id = Group)
@@ -161,7 +161,7 @@ alpha_div <- function(name) {
     filter(dli_level == "low") %>%
     pull(n)
   
-  write.csv(dli_metadata_alpha,paste("ITSpilot/ITScsvs/IT_", name, "_alpha_dli.csv", sep=""), row.names = FALSE)
+  write.csv(dli_metadata_alpha,paste("ITSfinal2/ITScsvs/IT_", name, "_alpha_dli.csv", sep=""), row.names = FALSE)
   
   # box plot with jitters
   dli_metadata_alpha %>%
@@ -183,7 +183,7 @@ alpha_div <- function(name) {
     ylim(0, 10) +
     theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_pilot_dli.tiff", sep=""), width=5, height=4)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_pilot_dli.tiff", sep=""), width=5, height=4)
   
   # Amanda Method all Samples
   #EXPAND METADATA
@@ -243,7 +243,7 @@ alpha_div <- function(name) {
     mutate(section = str_replace_all(section, "CVWRF", "5_CVWRF")) %>%
     mutate(section = str_replace_all(section, "TF", "6_TF"))
   
-  write.csv(all_metadata_alpha,paste("ITSpilot/ITScsvs/IT_", name, "_alpha_all.csv", sep=""), row.names = FALSE)
+  write.csv(all_metadata_alpha,paste("ITSfinal2/ITScsvs/IT_", name, "_alpha_all.csv", sep=""), row.names = FALSE)
   
   # box plot with jitters
   all_metadata_alpha %>%
@@ -262,10 +262,10 @@ alpha_div <- function(name) {
                       labels=labels,
                       values=c(Pilot_color, CVWRF_color, Labrabr_color, TF_color, GHR_color, Control_color)) +
     theme_classic() +
-    ylim(0, 15) +
+    ylim(0, 12) +
     theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_all_sections.tiff", sep=""), width=5, height=4)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_all_sections.tiff", sep=""), width=5, height=4)
   
   ## Amanda Method pilot vs 81RABR
   
@@ -314,7 +314,7 @@ alpha_div <- function(name) {
     ylim(0, 10) +
     theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5))
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_pilotv81.tiff", sep=""), width=5, height=4)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_pilotv81.tiff", sep=""), width=5, height=4)
   
   # Alpha Div: Productivity v Invsimpson
   prod_metadata1 <- gather_metadata("section", "dry_productivity_substratum", "date", 1) %>%
@@ -331,7 +331,7 @@ alpha_div <- function(name) {
     theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
     stat_cor()+
     geom_smooth(method=lm, se=FALSE)
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_vPilot_Productivity.tiff", sep=""), width=3.5, height=2.3)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_vPilot_Productivity.tiff", sep=""), width=3.5, height=2.3)
   
   #lab rabr productivity v invsimpson
   prod_metadata2 <- gather_metadata("section", "productivity", "date", 2)
@@ -348,11 +348,11 @@ alpha_div <- function(name) {
     theme(axis.text.x = element_markdown(), plot.title=element_text(hjust=0.5)) +
     stat_cor()+
     geom_smooth(method=lm, se=FALSE)
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_v81RABR_Productivity.tiff", sep=""), width=3.5, height=2.3)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_v81RABR_Productivity.tiff", sep=""), width=3.5, height=2.3)
   
   # pilot RABR date productivity
   date_meta_alpha <- all_metadata_alpha %>%
-    filter(section == "pilot") %>%
+    filter(section == "4_pilot") %>%
     select(sample_id, date, invsimpson) %>%
     rename(sample=sample_id)
   
@@ -387,7 +387,7 @@ alpha_div <- function(name) {
     ylim(0, 20) +
     theme(plot.title=element_text(hjust=0.5),
           axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0))
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_alpha_div_timeline.tiff", sep=""), width=4, height=2.3)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_alpha_div_timeline.tiff", sep=""), width=4, height=2.3)
   
 }
 # Div vs Light?
@@ -399,10 +399,10 @@ alpha_div <- function(name) {
 # 11S_ITS_19.28912
 
 slow_alpha_div("pr2_euk") #done
-slow_alpha_div("pr2_fungi") #done
-slow_alpha_div("silv_euk") #done
-slow_alpha_div("silv_fungi") #done
+#slow_alpha_div("pr2_fungi") #done
+#slow_alpha_div("silv_euk") #done
+#slow_alpha_div("silv_fungi") #done
 alpha_div("pr2_euk")  #done
-alpha_div("pr2_fungi") #done
-alpha_div("silv_euk") #done
-alpha_div("silv_fungi") #done
+#alpha_div("pr2_fungi") #done
+#alpha_div("silv_euk") #done
+#alpha_div("silv_fungi") #done

@@ -8,7 +8,7 @@ library(tidyverse)
 setwd("~/Miller Lab/Rscripts_PilotRABR")
 
 gather_metadata <- function(target, page) {
-  read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+  read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target)
@@ -19,7 +19,7 @@ name <- "pr2_euk" #done
 #name <-  "silv_euk" #done
 #name <-  "silv_fungi" #done #run for each lineup
 # taxonomy file
-taxonomy <- read_tsv(paste("ITSpilot/final_", name, ".agc.0.05.cons.taxonomy", sep="")) %>%
+taxonomy <- read_tsv(paste("ITSfinal2/final_", name, ".agc.0.05.cons.taxonomy", sep="")) %>%
   select("OTU", "Taxonomy") %>%
   rename_all(tolower) %>%
   mutate(taxonomy = str_replace_all(taxonomy, "\\(\\d+\\)", ""),
@@ -42,7 +42,7 @@ taxonomy <- read_tsv(paste("ITSpilot/final_", name, ".agc.0.05.cons.taxonomy", s
 ## dli analysis -> significantly different
 dli_metadata <- gather_metadata("dli_level", 1)
 
-shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) 
+shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) 
 
 dli_shared_design <- inner_join(shared, dli_metadata, by=c("Group"="sample"))
 
@@ -54,23 +54,22 @@ high_low <- dli_shared_design %>%
 
 high_low %>%
   select(-dli_level) %>%
-  write_tsv("ITSpilot/processed_data/ITS.high_low.shared")
+  write_tsv("ITSfinal2/processed_data/ITS.high_low.shared")
 
 high_low %>%
   select(Group, dli_level) %>%
-  write_tsv("ITSpilot/processed_data/ITS.high_low.design")
+  write_tsv("ITSfinal2/processed_data/ITS.high_low.design")
 
 # run mothur lefse from desktop
 #in terminal
 # mothur\mothur
-#lefse(shared=ITS.high_low.shared, design=ITS.high_low.design, inputdir=ITSpilot\processed_data)
-     #NOT WORKING
+#lefse(shared=ITS.high_low.shared, design=ITS.high_low.design, inputdir=ITSfinal2\processed_data)
 
 
 # make plots
 
 # high vs low
-read_tsv("ITSpilot/processed_data/ITS.high_low.0.05.lefse_summary") %>%
+read_tsv("ITSfinal2/processed_data/ITS.high_low.0.05.lefse_summary") %>%
   drop_na(LDA) %>%
   filter(LDA > 3) %>%
   inner_join(., taxonomy, by=c("OTU" = "otu")) %>%
@@ -84,7 +83,7 @@ read_tsv("ITSpilot/processed_data/ITS.high_low.0.05.lefse_summary") %>%
   theme(axis.text.y = element_markdown(size=6),
         plot.title=element_text(hjust=0.5))
 
-ggsave(paste("ITSpilot/ITSplots/ITS_", name, "lefse_pilot_dli_high_low.tiff", sep=""), width=6, height=5)
+ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "lefse_pilot_dli_high_low.tiff", sep=""), width=6, height=5)
 
 
 ##LabRABR vs Pilot
@@ -100,7 +99,7 @@ pilot_metadata %>%
   mutate(section = factor(section,
                           levels=c("pilot", "81RABR")))
 
-shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) 
+shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) 
 
 
 
@@ -127,25 +126,25 @@ LabvPilot <- pilot_shared_design %>%
 
 LabvPilot %>%
   select(-section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.labvPilot.shared")
+  write_tsv("ITSfinal2/processed_data/ITS.labvPilot.shared")
 
 LabvPilot %>%
   select(Group, section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.labvPilot.design")
+  write_tsv("ITSfinal2/processed_data/ITS.labvPilot.design")
 
 # run mothur lefse from desktop
 #in terminal
 # mothur\mothur
-#lefse(shared=ITS.labvPilot.shared, design=ITS.labvPilot.design, inputdir=ITSpilot\processed_data)
+#lefse(shared=ITS.labvPilot.shared, design=ITS.labvPilot.design, inputdir=ITSfinal2\processed_data)
 #NOT WORKING
 
 
 # make plots
 
 # Lab v Pilot
-read_tsv("ITSpilot/processed_data/ITS.labvPilot.0.05.lefse_summary") %>%
+read_tsv("ITSfinal2/processed_data/ITS.labvPilot.0.05.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 3.3) %>%
+  filter(LDA > 3.7) %>%
   inner_join(., taxonomy, by=c("OTU" = "otu")) %>%
   mutate(LDA = if_else(Class == "81RABR", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -157,12 +156,12 @@ read_tsv("ITSpilot/processed_data/ITS.labvPilot.0.05.lefse_summary") %>%
   theme(axis.text.y = element_markdown(size=12),
         plot.title=element_text(hjust=0.5))
 
-ggsave(paste("ITSpilot/ITSplots/ITS_", name, "lefse_labvpilot.tiff", sep=""), width=6, height=5)
+ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "lefse_labvpilot.tiff", sep=""), width=6, height=5)
 
 ##TF vs Pilot
 
 gather_metadata <- function(target, page) {
-  read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+  read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target)
@@ -178,7 +177,7 @@ pilot_metadata %>%
   mutate(section = factor(section,
                           levels=c("pilot", "TF")))
 
-shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) 
+shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) 
 
 
 
@@ -205,25 +204,25 @@ TFvPilot <- pilot_shared_design %>%
 
 TFvPilot %>%
   select(-section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.TFvPilot.shared")
+  write_tsv("ITSfinal2/processed_data/ITS.TFvPilot.shared")
 
 TFvPilot %>%
   select(Group, section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.TFvPilot.design")
+  write_tsv("ITSfinal2/processed_data/ITS.TFvPilot.design")
 
 # run mothur lefse from desktop
 #in terminal
 # mothur\mothur
-#lefse(shared=ITS.TFvPilot.shared, design=ITS.TFvPilot.design, inputdir=ITSpilot\processed_data)
+#lefse(shared=ITS.TFvPilot.shared, design=ITS.TFvPilot.design, inputdir=ITSfinal2\processed_data)
 #NOT WORKING
 
 
 # make plots
 
 # TF v Pilot
-read_tsv("ITSpilot/processed_data/ITS.TFvPilot.0.05.lefse_summary") %>%
+read_tsv("ITSfinal2/processed_data/ITS.TFvPilot.0.05.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 3.5) %>%
+  filter(LDA > 3.6) %>%
   inner_join(., taxonomy, by=c("OTU" = "otu")) %>%
   mutate(LDA = if_else(Class == "TF", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -235,12 +234,12 @@ read_tsv("ITSpilot/processed_data/ITS.TFvPilot.0.05.lefse_summary") %>%
   theme(axis.text.y = element_markdown(size=6),
         plot.title=element_text(hjust=0.5))
 
-ggsave(paste("ITSpilot/ITSplots/ITS_", name, "lefse_TFvpilot.tiff", sep=""), width=6, height=5)
+ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "lefse_TFvpilot.tiff", sep=""), width=6, height=5)
 
 ##CVWRF vs Pilot
 
 gather_metadata <- function(target, page) {
-  read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+  read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target)
@@ -256,7 +255,7 @@ pilot_metadata %>%
   mutate(section = factor(section,
                           levels=c("pilot", "CVWRF")))
 
-shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) 
+shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) 
 
 
 
@@ -283,25 +282,25 @@ CVWRFvPilot <- pilot_shared_design %>%
 
 CVWRFvPilot %>%
   select(-section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.CVWRFvPilot.shared")
+  write_tsv("ITSfinal2/processed_data/ITS.CVWRFvPilot.shared")
 
 CVWRFvPilot %>%
   select(Group, section) %>%
-  write_tsv("ITSpilot/processed_data/ITS.CVWRFvPilot.design")
+  write_tsv("ITSfinal2/processed_data/ITS.CVWRFvPilot.design")
 
 # run mothur lefse from desktop
 #in terminal
 # mothur\mothur
-#lefse(shared=ITS.CVWRFvPilot.shared, design=ITS.CVWRFvPilot.design, inputdir=ITSpilot\processed_data)
-#NOT WORKING
+#lefse(shared=ITS.CVWRFvPilot.shared, design=ITS.CVWRFvPilot.design, inputdir=ITSfinal2\processed_data)
+
 
 
 # make plots
 
 # CVWRF v Pilot
-read_tsv("ITSpilot/processed_data/ITS.CVWRFvPilot.0.05.lefse_summary") %>%
+read_tsv("ITSfinal2/processed_data/ITS.CVWRFvPilot.0.05.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > .1) %>%
+  filter(LDA > 3.5) %>%
   inner_join(., taxonomy, by=c("OTU" = "otu")) %>%
   mutate(LDA = if_else(Class == "CVWRF", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -313,7 +312,7 @@ read_tsv("ITSpilot/processed_data/ITS.CVWRFvPilot.0.05.lefse_summary") %>%
   theme(axis.text.y = element_markdown(size=6),
         plot.title=element_text(hjust=0.5))
 
-ggsave(paste("ITSpilot/ITSplots/ITS_", name, "lefse_CVWRFvpilot.tiff", sep=""), width=6, height=5)
+ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "lefse_CVWRFvpilot.tiff", sep=""), width=6, height=5)
 
 #other comparisons?
 

@@ -12,7 +12,7 @@ string <- Lab_RABRs
 
 rarefaction_all <- function(name) {
   # Rarefaction
-  loc_shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
+  loc_shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) %>%
     select(Group, starts_with("Otu")) %>%
     pivot_longer(-Group) %>%
     group_by(Group) %>%
@@ -22,8 +22,7 @@ rarefaction_all <- function(name) {
     mutate(total=sum(value)) %>% 
     filter(total != 0) %>%
     ungroup() %>%
-    select(-total) %>%
-    filter(Group != "C1_ITS" & Group != "C2_ITS")
+    select(-total)
   
   loc_shared_df <- loc_shared %>%
     pivot_wider(names_from="name", values_from="value", values_fill = 0) %>%
@@ -52,11 +51,11 @@ rarefaction_all <- function(name) {
           strip.background = element_blank(),
           strip.placement="outside",
           strip.text.x = element_markdown())
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_rarefaction.tiff", sep=""), width=5, height=4)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_rarefaction.tiff", sep=""), width=5, height=4)
 
   #test grouping
   gather_metadata <- function(target, t2, t3, page) {
-    read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+    read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
       rename_all(tolower) %>%
       mutate(sample = str_replace_all(sample, "-", "_")) %>%
       select(sample, target, t2, t3)
@@ -86,7 +85,7 @@ rarefaction_all <- function(name) {
   GHR_color <- "cyan"
   Control_color <- "#BE00FF"
   
-  write.csv(prep_rarecurve,paste("ITSpilot/ITScsvs/IT_", name, "_rare_allcolor.csv", sep=""), row.names = FALSE)
+  write.csv(prep_rarecurve,paste("ITSfinal2/ITScsvs/IT_", name, "_rare_allcolor.csv", sep=""), row.names = FALSE)
   
   breaks <- c("pilot", "CVWRF", "81RABR", "TF", "GHR", "control")
   labels <- c("Pilot RABR", "CVWRF", "Lab-scale RABRs", "Trickling Filter", "GHR", "Control")
@@ -110,7 +109,7 @@ rarefaction_all <- function(name) {
                       breaks=breaks,
                       labels=labels,
                       values=c(Pilot_color, CVWRF_color, Labrabr_color, TF_color, GHR_color, Control_color))
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_rarefaction_color.tiff", sep=""), width=7, height=4) 
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_rarefaction_color.tiff", sep=""), width=7, height=4) 
   
 }
 
@@ -120,7 +119,7 @@ rarefaction_all <- function(name) {
 rarefaction <- function(name, loc, string) {
   # pilot vs labRABR vs TF vs GH vs 
   # Rarefaction
-  loc_shared <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
+  loc_shared <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) %>%
     select(Group, starts_with("Otu")) %>%
     pivot_longer(-Group) %>%
     group_by(Group) %>%
@@ -167,29 +166,26 @@ rarefaction <- function(name, loc, string) {
           strip.placement="outside",
           strip.text.x = element_markdown())
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_", name, "_rarefaction_", loc, ".tiff", sep=""), width=5, height=4)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_", name, "_rarefaction_", loc, ".tiff", sep=""), width=5, height=4)
 }
 
 #rarefaction <- function(name, loc, string)
 
-Lab_RABRs <- c("13_R27_11_3_21_ITS", "17_R36_10_28_21_ITS", "19_R43_11_15_21_ITS",
-               "11_R45_10_18_21_ITS", "16_R45_11_15_21", "14_R46_11_5_21_ITS",
-               "20_R58_10_28_21_ITS", "18_R60_11_21_ITS", "12_R60_11_15_21_ITS",
-               "15_R7_11_15_21_ITS", "21_R72_11_15_21_ITS")
+Lab_RABRs <- c("R27_11_3_21_ITS", "R36_10_28_21_ITS", "R43_11_15_21_ITS", 
+"R45_10_18_21_ITS", "R45_11_15_21_ITS", "R46_11_5_21_ITS", "R58_10_28_21_ITS", 
+"R60_11_1_21_ITS", "R60_11_15_21_ITS", "R7_11_15_21_ITS", "R72_11_15_21_ITS", "R75_11_15_21_ITS")
 Pilot_RABRs <- c("10_5_ITS", "19_ITS", "26_ITS", "11S_ITS", "11R_ITS", "S1_ITS", "S2_ITS", "S3_ITS")
-Trickling_Filter <- c("3_TF_5_25_22_ITS", "7_TF_6_9_22_ITS", 
-                      "10_TF_6_22_22_ITS", "trickling_filter_7_6_21_ITS", 
-                      "trickling_filter_9_11_21_ITS", "trick_filter_11_9_21_R1_ITS")
-CVWRF <- c("1_CVWRF_PR_6_22_22_ITS", "4_CVWRF_PSR_2_22_22_ITS")
-GH <- c("2_GHR_6_15_22_ITS", "6_GHR_5_1_22_ITS")
+Trickling_Filter <- c("TF_5_25_22_ITS", "TF_6_9_22_ITS", "TF_6_22_22_ITS", "TF_7_6_21_ITS", "TF_9_11_21_ITS", "TF_11_9_21_ITS")
+CVWRF <- c("CVWRF_PR_6_9_22_ITS", "CVWRF_PSR_6_22_22_ITS")
+GH <- c("GHR_6_15_22_ITS", "GHR_5_1_22_ITS")
 Control <- c("C1_ITS", "C2_ITS")
 
-for (i in c("pr2_euk", "pr2_fungi", "silv_euk", "silv_fungi")) {
+for (i in c("pr2_euk")) {
   rarefaction_all(i)
   rarefaction(i, "Lab_RABRs", Lab_RABRs)
   rarefaction(i, "Pilot_RABRs", Pilot_RABRs)
   rarefaction(i, "Trickling_Filter", Trickling_Filter)
   rarefaction(i, "CVWRF", CVWRF)
-  #rarefaction(i, "GH", GH)
+  rarefaction(i, "GH", GH)
   rarefaction(i, "Control", Control)
 }

@@ -10,20 +10,20 @@ setwd("~/Miller Lab/Rscripts_PilotRABR")
 name <- "pr2_euk"
 
 gather_metadata <- function(target, t2, t3, page) {
-  read_excel("ITSpilot/ITS_metadata.xlsx", sheet=page) %>%
+  read_excel("ITSfinal2/ITS_metadata.xlsx", sheet=page) %>%
     rename_all(tolower) %>%
     mutate(sample = str_replace_all(sample, "-", "_")) %>%
     select(sample, target, t2, t3)
 }
 
 #import otu counts
-otu_counts <- read_tsv(paste("ITSpilot/final_",name,".agc.shared", sep="")) %>%
+otu_counts <- read_tsv(paste("ITSfinal2/final_",name,".agc.shared", sep="")) %>%
   select(-label, -numOtus) %>%
   pivot_longer(-Group, names_to = "otu", values_to = "count") %>%
   rename(sample_id = Group)
 
 # import taxonomy
-taxonomy <- read_tsv(paste("ITSpilot/final_", name, ".agc.0.05.cons.taxonomy", sep="")) %>%
+taxonomy <- read_tsv(paste("ITSfinal2/final_", name, ".agc.0.05.cons.taxonomy", sep="")) %>%
   select("OTU", "Taxonomy") %>%
   rename_all(tolower) %>%
   mutate(taxonomy = str_replace_all(taxonomy, "\\(\\d+\\)", ""), taxonomy = str_replace(taxonomy, ";$", "")) %>%
@@ -54,7 +54,9 @@ otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='
 #function
 tax = c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Chlorophyceae", "Unclassified Eukaryota")
 lvl = "order"
-RA_Prod <- function(lvl, tax) {
+xcor = 1
+ycor = 'top'
+RA_Prod <- function(lvl, tax, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     group_by(section, sample_id, taxon, date, productivity) %>%
@@ -77,7 +79,7 @@ RA_Prod <- function(lvl, tax) {
     filtered_rel_abund <- dplyr::bind_rows(filtered_rel_abund, save)
   }
   
-  write.csv(filtered_rel_abund,paste("ITSpilot/ITScsvs/IT_pr2_euk_StrainProd_", lvl, ".csv", sep=""), row.names = FALSE)
+  write.csv(filtered_rel_abund,paste("ITSfinal2/ITScsvs/IT_pr2_euk_StrainProd_", lvl, ".csv", sep=""), row.names = FALSE)
   
   #graph
   filtered_rel_abund %>%
@@ -100,10 +102,10 @@ RA_Prod <- function(lvl, tax) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor() +
-    geom_smooth(method=lm, se=FALSE)
+    geom_smooth(method=lm, se=FALSE) +
+    stat_cor(label.x=xcor, label.y.npc=ycor)
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_RAvsProd_", lvl, ".tiff", sep=""), width=7, height=5)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_RAvsProd_", lvl, ".tiff", sep=""), width=7, height=5)
   
 }
 
@@ -111,7 +113,7 @@ tax = c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Euk
 lvl = "order"
 rabr = '81RABR'
 x_spot = 16
-RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
+RA_Prod_RABR <- function(lvl, tax, rabr, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     filter(section==rabr)%>%
@@ -135,7 +137,7 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
     filtered_rel_abund <- dplyr::bind_rows(filtered_rel_abund, save)
   }
   
-  #write.csv(filtered_rel_abund,paste("ITSpilot/ITScsvs/IT_pr2_euk_StrainProd_", lvl, ".csv", sep=""), row.names = FALSE)
+  #write.csv(filtered_rel_abund,paste("ITSfinal2/ITScsvs/IT_pr2_euk_StrainProd_", lvl, ".csv", sep=""), row.names = FALSE)
   
   #graph
   filtered_rel_abund %>%
@@ -157,35 +159,35 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
           axis.text.x = element_text(angle = -45, vjust = 1, hjust = 0),
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
-          strip.text = element_markdown()) +
-    stat_cor() +
-    geom_smooth(method=lm, se=FALSE)
+          strip.text = element_markdown())  +
+    geom_smooth(method=lm, se=FALSE) +
+    stat_cor(label.x=xcor, label.y.npc=ycor)
   
-  ggsave(paste("ITSpilot/ITSplots/ITS_RAvsProd_", lvl, "_", rabr, ".tiff", sep=""), width=7, height=5)
+  ggsave(paste("ITSfinal2/ITSplots/ITS_RAvsProd_", lvl, "_", rabr, ".tiff", sep=""), width=7, height=5)
   
 }
 
 
 #"domain", "supergroup", "division", "subdivision", "class", "order", "family", "genus", "species"
-RA_Prod("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"))
-RA_Prod("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"))
-RA_Prod("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Chlorophyceae", "Unclassified Eukaryota"))
-RA_Prod("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"))
-RA_Prod("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"))
-RA_Prod("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"))
-RA_Prod("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"))
+RA_Prod("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Chlorophyceae", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"), 15, 'center')
+RA_Prod("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"), 15, 'center')
 
-RA_Prod_RABR("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Chlorophyceae", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"), 'pilot', 3.2)
-RA_Prod_RABR("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"), "81RABR", 16)
-RA_Prod_RABR("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"), "81RABR", 16)
+RA_Prod_RABR("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"), 'pilot', 1.5, 'top')
+RA_Prod_RABR("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"), 'pilot', 1, 'center')
+RA_Prod_RABR("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Chlorophyceae", "Unclassified Eukaryota"), 'pilot', 1, 'center')
+RA_Prod_RABR("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"), 'pilot', 1.5, 'top')
+RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"), 'pilot', 1, 'center')
+RA_Prod_RABR("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"), 'pilot', 0.5, 'center')
+RA_Prod_RABR("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"), 'pilot', 1, 'center')
+RA_Prod_RABR("genus", c("Chlorella", "Ettlia", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("family", c("Chlamydomonadales_X", "Chlorellales_X", "Sphaeropleales_X", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("order", c("Chlamydomonadales", "Chlorellales", "Sphaeropleales", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("class", c("Chlorophyceae", "Trebouxiophyceae", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("subdivision", c("Chlorophyta_X", "Proteobacteria_X", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("division", c("Chlorophyta", "Proteobacteria", "Unclassified Eukaryota"), "81RABR", 1, 'center')
+RA_Prod_RABR("supergroup", c("Archaeplastida", "PANNAM", "Unclassified Eukaryota"), "81RABR", 1, 'center')
