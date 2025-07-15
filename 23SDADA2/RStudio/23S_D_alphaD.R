@@ -258,9 +258,9 @@ ggsave("23S_D_plots/23SD_alpha_div_all_sections.tiff", width=5, height=4)
 
 #EXPAND METADATA
 p_metadata_alpha <- all_metadata_alpha %>%
-  filter(section == "pilot")
+  filter(section == "4_pilot")
 pvl_metadata_alpha <- all_metadata_alpha %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   rbind(.,p_metadata_alpha)
 
 Pilot_color <- "#BEBEBE"
@@ -271,11 +271,11 @@ all_count <- pvl_metadata_alpha %>%
   dplyr::count(section)
 
 pilot_n <- all_count %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   pull(n)
 
 labRABR_n <- all_count %>%
-  filter(section == "81RABR") %>%
+  filter(section == "2_81RABR") %>%
   pull(n)
 
 # box plot with jitters
@@ -288,11 +288,11 @@ pvl_metadata_alpha %>%
   geom_jitter(show.legend=FALSE, width=0.25, shape=21, color="black") +
   labs(x=NULL, y="Inverse Simpson Index") +
   ggtitle("Standard vs Lab RABR Alpha Diversity by Section") +
-  scale_x_discrete(breaks=c("pilot", "81RABR"),
-                   labels=c("pilot", "81RABR")) +
+  scale_x_discrete(breaks=c("4_pilot", "2_81RABR"),
+                   labels=c("Pilot", "Lab RABR")) +
   scale_fill_manual(name=NULL,
-                    breaks=c("pilot", "81RABR"),
-                    labels=c("pilot", "81RABR"),
+                    breaks=c("4_pilot", "2_81RABR"),
+                    labels=c("Pilot", "Lab RABR"),
                     values=c(Pilot_color, labRABR_color)) +
   theme_classic() +
   ylim(0, 45) +
@@ -338,7 +338,7 @@ ggsave("23S_D_plots/23SD_alpha_div_v81RABR_Productivity.tiff", width=3.5, height
 
 # pilot RABR date productivity
 date_meta_alpha <- all_metadata_alpha %>%
-  filter(section == "pilot") %>%
+  filter(section == "4_pilot") %>%
   select(sample_id, date, invsimpson)
 
 RnS <- date_meta_alpha %>%
@@ -385,3 +385,4 @@ ggsave("23S_D_plots/23SD_alpha_div_timeline.tiff", width=4, height=2.3)
 # Sample  InvSimpson
 # 11R_23S_14.69596
 # 11S_23S_19.28912
+

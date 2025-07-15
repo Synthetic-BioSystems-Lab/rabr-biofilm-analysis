@@ -2,6 +2,8 @@ library(tidyr)
 library(ggtext)
 library(readxl)
 library(glue)
+library(dplyr)
+library(tidyverse)
 
 setwd("~/Miller Lab/Rscripts_PilotRABR")
 #DADA2/23SDADA2visualization/")
@@ -199,7 +201,7 @@ bob <-bob[!duplicated(bob), ]
 # Lab v Pilot
 read_tsv("DADA2/23SDADA2visualization/processed_data/23S.labvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 4) %>%
+  filter(LDA > 3.9) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "81RABR", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%
@@ -325,7 +327,7 @@ CVWRFvPilot %>%
 # CVWRF v Pilot
 read_tsv("DADA2/23SDADA2visualization/processed_data/23S.CVWRFvPilot.0.03.lefse_summary") %>%
   drop_na(LDA) %>%
-  filter(LDA > 1) %>%
+  filter(LDA > 3.7) %>%
   inner_join(., taxonomy, by=c("OTU" = "asvs")) %>%
   mutate(LDA = if_else(Class == "CVWRF", -1 * LDA, LDA),
          taxon = fct_reorder(taxon, LDA)) %>%

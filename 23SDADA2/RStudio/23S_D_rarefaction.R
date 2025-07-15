@@ -129,9 +129,9 @@ ggsave("23S_D_plots/23SD_rarefaction_color.tiff", width=7, height=4)
 # Rarefaction
 
 # Lab RABRs
-# "23S_R27_11_3_21", "17_R36_10_28_22_23S", "23S_R43_11_15_21",
+# "23S_R27_11_3_21", "17_R36_10_18_22_23S", "23S_R43_11_15_21",
 # "11_R45_10_18_21_23S", "16_R45_11_15_22_23S", "23S_R46_11_5_21",
-# "20_R58_10_28_21_23S", "18_R60_11_1_21_23S", "12_R60_11_15_22_23S",
+# "23S_R58_10_28_21", "18_R60_11_1_21_23S", "12_R60_11_15_22_23S",
 # "23S_R7_11_15_21", "21_R72_11_15_21_23S", "22_R75_11_15_21_23S"
 
 # Pilot
@@ -149,42 +149,50 @@ ggsave("23S_D_plots/23SD_rarefaction_color.tiff", width=7, height=4)
 # Control
 # "C1_23S", "C2_23S"
 
+rare <- function(section, samples) {
+  loc_shared_df <- shared %>%
+    filter(sample_id %in% samples) %>%
+    as.data.frame()
+  
+  rownames(loc_shared_df) <- loc_shared_df$Group
+  loc_shared_df <- loc_shared_df[, -1]
+  
+  # plot
+  rarecurve_data <- rarecurve(loc_shared_df, step=100)
+  
+  DF <- map_dfr(rarecurve_data, bind_rows) %>%
+    bind_cols(Group = rownames(loc_shared_df), .)  %>%
+    pivot_longer(-Group) %>%
+    mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
+    select(-name)
+  
+  ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
+    geom_line() +
+    #geom_text(aes(label=Group),
+              #data = DF %>% filter(n_seqs == median(n_seqs)),
+              #nudge_x = 0.35, 
+              #size = 4) +
+    theme_classic() +
+    scale_y_continuous(expand=c(0,0)) +
+    labs(x="Number of Sequences", y="Number of OTUs", 
+         title=paste("Rarefaction Curves for ", section, sep="")) +
+    theme(plot.title=element_text(hjust=0.5),
+          legend.text = element_markdown(),
+          legend.key.size = unit(10, "pt"),
+          strip.background = element_blank(),
+          strip.placement="outside",
+          strip.text.x = element_markdown())
+  
+  ggsave(paste("23S_D_plots/23SD_rarefaction_", tolower(section), ".tiff", sep=""), width=5, height=4)
+  
+}
 
-loc_shared_df <- shared %>%
-  filter(sample_id %in% c("23S_R27_11_3_21", "17_R36_10_28_22_23S", "23S_R43_11_15_21",
-                          "11_R45_10_18_21_23S", "16_R45_11_15_22_23S", "23S_R46_11_5_21",
-                          "20_R58_10_28_21_23S", "18_R60_11_1_21_23S", "12_R60_11_15_22_23S",
-                          "23S_R7_11_15_21", "21_R72_11_15_21_23S", "22_R75_11_15_21_23S")) %>%
-  as.data.frame()
-
-rownames(loc_shared_df) <- loc_shared_df$Group
-loc_shared_df <- loc_shared_df[, -1]
-
-# plot
-rarecurve_data <- rarecurve(loc_shared_df, step=100)
-
-DF <- map_dfr(rarecurve_data, bind_rows) %>%
-  bind_cols(Group = rownames(loc_shared_df), .)  %>%
-  pivot_longer(-Group) %>%
-  mutate(n_seqs = as.numeric(str_replace(name, "N", ""))) %>%
-  select(-name)
-
-ggplot(data = DF, aes(x=n_seqs, y=value, group=Group)) +
-  geom_line() +
-  #geom_text(aes(label=Group),
-            #data = DF %>% filter(n_seqs == median(n_seqs)),
-            #nudge_x = 0.35, 
-            #size = 4) +
-  theme_classic() +
-  scale_y_continuous(expand=c(0,0)) +
-  labs(x="Number of Sequences", y="Number of OTUs", 
-       title="Rarefaction Curves for Lab Scale RABR Samples") +
-  theme(plot.title=element_text(hjust=0.5),
-        legend.text = element_markdown(),
-        legend.key.size = unit(10, "pt"),
-        strip.background = element_blank(),
-        strip.placement="outside",
-        strip.text.x = element_markdown())
-
-ggsave("23S_D_plots/23SD_rarefaction_81RABR.tiff", width=5, height=4)
-
+rare("Lab RABRs", c("R27_11_3_21_23S", "R36_10_18_21_23S", "R43_11_15_21_23S", 
+                    "R45_10_18_21_23S", "R45_11_15_21_23S", "R46_11_5_21_23S", 
+                    "R58_10_28_21_23S", "R60_11_1_21_23S", "R60_11_15_21_23S", 
+                    "R7_11_15_21_23S", "R72_11_15_21_23S", "R75_11_15_21_23S"))
+rare("Pilot", c("10_5_23S", "19_23S", "26_23S", "11S_23S", "11R_23S", "S1_23S", "S2_23S", "S3_23S"))
+rare("TF", c("TF_5_25_22_23S", "TF_6_9_22_23S", "TF_6_22_22_23S", "TF_7_6_21_23S", "TF_9_11_21_23S", "TF_11_9_21_23S"))
+rare("CVWRF", c("CVWRF_PR_6_9_22_23S", "CVWRF_PSR_6_22_22_23S"))
+rare("GH", c("GHR_6_15_22_23S", "GHR_5_1_22_23S"))
+rare("Control", c("C1_23S", "C2_23S"))

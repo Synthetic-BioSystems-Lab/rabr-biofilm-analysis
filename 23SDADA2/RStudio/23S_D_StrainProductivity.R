@@ -95,7 +95,9 @@ otu_rel_abund <- inner_join(trimmed_composite, all_metadata,  by=c('sample_id'='
 #function
 tax = c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus")
 lvl = "Genus"
-RA_Prod <- function(lvl, tax) {
+xcor = 1
+ycor = 'top'
+RA_Prod <- function(lvl, tax, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(level==lvl) %>%
     group_by(section, sample_id, taxon, date, productivity) %>%
@@ -139,7 +141,7 @@ RA_Prod <- function(lvl, tax) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor() +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("23S_D_plots/23SD_RAvsProd_", lvl, ".tiff", sep=""), width=7, height=5)
@@ -150,7 +152,7 @@ tax = c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus")
 lvl = "Genus"
 rabr = 'pilot'
 x_spot = 3.2
-RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
+RA_Prod_RABR <- function(lvl, tax, rabr, xcor, ycor) {
   taxon_rel_abund <- otu_rel_abund %>%
     filter(section==rabr) %>%
     filter(level==lvl) %>%
@@ -195,7 +197,7 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
           legend.key.size = unit(10, "pt"),
           strip.background = element_blank(),
           strip.text = element_markdown()) +
-    stat_cor() +
+    stat_cor(label.x=xcor, label.y.npc=ycor) +
     geom_smooth(method=lm, se=FALSE)
   
   ggsave(paste("23S_D_plots/23SD_RAvsProd_", lvl, "_", rabr, ".tiff", sep=""), width=7, height=5)
@@ -203,19 +205,20 @@ RA_Prod_RABR <- function(lvl, tax, rabr, x_spot) {
 }
 
 
-RA_Prod("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"))
-RA_Prod("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"))
-RA_Prod("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"))
-RA_Prod("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"))
-RA_Prod("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"))
+RA_Prod("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"), 15, 'top')
+RA_Prod("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"), 15, 'top')
+RA_Prod("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"), 15, 'top')
+RA_Prod("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"), 15, 'top')
+RA_Prod("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"), 15, 'center')
 
-RA_Prod_RABR("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"), 'pilot', 3.2)
-RA_Prod_RABR("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"), 'pilot', 3.2)
-RA_Prod_RABR("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"), 'pilot', 3.2)
-RA_Prod_RABR("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"), 'pilot', 3.2)
-RA_Prod_RABR("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"), 'pilot', 3.2)
-RA_Prod_RABR("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"), '81RABR', 16)
-RA_Prod_RABR("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"), '81RABR', 16)
-RA_Prod_RABR("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"), '81RABR', 16)
-RA_Prod_RABR("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"), '81RABR', 16)
-RA_Prod_RABR("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"), '81RABR', 16)
+RA_Prod_RABR("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"), 'pilot', 1.5, 'top')
+RA_Prod_RABR("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"), 'pilot', 1.2, 'top')
+RA_Prod_RABR("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"), 'pilot', 1, 'top')
+RA_Prod_RABR("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"), 'pilot', 1.5, 'center')
+RA_Prod_RABR("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"), 'pilot', 1, 'center')
+RA_Prod_RABR("Genus", c("Chlorella", "Leptolyngbya", "Nannochloropsis", "Synechococcus"), '81RABR', 16, 'top')
+RA_Prod_RABR("Family", c("Chlorellaceae", "Leptolyngbyaceae", "Microcoleaceae", "Monodopsidaceae", "Synechococcaceae"), '81RABR', 16, 'top')
+RA_Prod_RABR("Order", c("Chlorellales", "Eustigmatales", "Oscillatoriales", "Prasiolales", "Synechococcales"), '81RABR', 16, 'top')
+RA_Prod_RABR("Class", c("Chlorophyceae", "Cyanophyceae", "Eustigmatophyceae", "Trebouxiophyceae"), '81RABR', 16, 'top')
+RA_Prod_RABR("Phylum", c("Chlorophyta", "Ochrophyta", "Cyanobacteria"), '81RABR', 16, 'center')
+
