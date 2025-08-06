@@ -3,8 +3,6 @@
 ## Overview
 Population analysis of rotating algal bioreactor biofilm 16S, 18S, 23S, ITS sequences. Comparison of mothur and DADA2 methodologies for such analysis.
 
-Direct futher questions to <>.
-
 ## Installation
 Download all files.
 ### Running Mothur
