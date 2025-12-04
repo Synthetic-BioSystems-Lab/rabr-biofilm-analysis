@@ -1,0 +1,175 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Load the data, label pipelines, and combine
+mothur_df = pd.read_csv("16s_data_mothur/16s_data_mothur.csv")
+dada2_df = pd.read_csv("16s_data_DADA2/16s_data_DADA2.csv")
+mothur_df["Pipeline"] = "Mothur"
+dada2_df["Pipeline"] = "DADA2"
+combined_df = pd.concat([mothur_df, dada2_df], ignore_index=True)
+
+# Filter Data (RABR and Phylum) and exclude same RABR at different time
+combined_df = combined_df[
+    (combined_df["section"] == "control") &
+    (combined_df["level"] == "Phylum")
+].copy()
+
+print(combined_df)
+
+# Write csv
+combined_df.to_csv("16s_data_CO.csv", index=False)
+
+# Select temp (10, 20, 30)
+stacked_df = combined_df[combined_df["rel_abund"] >= 1].copy()
+
+# Filter for Mothur and DADA2 only
+mothur_df = stacked_df[stacked_df["Pipeline"] == "Mothur"].copy()
+dada2_df = stacked_df[stacked_df["Pipeline"] == "DADA2"].copy()
+
+# Pivot to get relative abundances by sample
+mothur_pivot = mothur_df.pivot_table(
+    index="label", columns="taxon", values="rel_abund", aggfunc="sum", fill_value=0
+)
+dada2_pivot = dada2_df.pivot_table(
+    index="label", columns="taxon", values="rel_abund", aggfunc="sum", fill_value=0
+)
+
+# Ensure consistent taxon columns
+common_taxa = sorted(set(mothur_pivot.columns).union(dada2_pivot.columns))
+mothur_pivot = mothur_pivot.reindex(columns=common_taxa, fill_value=0)
+dada2_pivot = dada2_pivot.reindex(columns=common_taxa, fill_value=0)
+
+# Reorder taxa: largest total abundance first (for stacking order)
+taxa_order = (
+    pd.concat([mothur_pivot, dada2_pivot])
+    .sum()
+    .sort_values(ascending=False)
+    .index.tolist()
+)
+common_taxa = taxa_order
+
+# Build new DataFrame for grouped bar plotting
+labels = mothur_pivot.index.tolist()
+bar_width = 0.35
+spacing = 0.1  # small spacing between Mothur and DADA2
+
+label_order = [
+    "Control_1",
+    "Control_2"
+]
+
+mothur_pivot = mothur_pivot.reindex(label_order)
+dada2_pivot = dada2_pivot.reindex(label_order)
+labels = label_order
+
+# Calculate positions
+x = np.arange(len(labels)) * 2  # Leave space between each sample group
+positions_mothur = x - bar_width/2 - spacing/2
+positions_dada2 = x + bar_width/2 + spacing/2
+
+# Plot setup
+fig, ax = plt.subplots(figsize=(12, 6))
+colors = (
+    sns.color_palette("Set1", 9)
+    + sns.color_palette("Set2", 8)
+    + sns.color_palette("Set3", 10)
+)
+
+colors = colors[:27]  # Trim if needed
+
+manual_colors = {
+    "Chlorophyta": colors[0],
+    "Alveolata": colors[1],
+    "Stramenopiles": colors[2],
+    "Opisthokonta": colors[3],
+    "Rhizaria": colors[4],
+    "Proteobacteria": colors[5],
+    "Bacteroidetes": colors[6],
+    "Firmicutes": colors[7],
+    "Actinobacteria": colors[8],
+    "Cyanobacteria": colors[9],
+    "Chloroflexi": colors[10],
+    "Unclassified Eukaryota": colors[11],
+    "Epsilonbacteraeota": colors[12],
+    "Nitrospirae": colors[13],
+    "Thaumarchaeota": colors[14],
+    "Euryarchaeota": colors[15],
+    "Euglenozoa": colors[16],
+    "Acidobacteria": colors[17],
+    "Ochrophyta": colors[18],
+    "Unclassified": colors[19],
+    "Rhodophyta": colors[20],
+    "Unclassified Plantae": colors[21],
+    "Discosea": colors[22],
+    "Streptophyta": colors[23],
+    "Gemmatimonadetes": colors[24],
+    "Cloacimonetes": colors[25]
+}
+
+taxon_colors = {taxon: manual_colors.get(taxon, "#cccccc") for taxon in common_taxa}
+
+custom_order = [
+    "Acidobacteria",
+    "Actinobacteria",
+    "Alveolata",
+    "Bacteroidetes",
+    "Chloroflexi",
+    "Chlorophyta",
+    "Cloacimonetes",
+    "Cyanobacteria",
+    "Discosea",
+    "Epsilonbacteraeota",
+    "Euglenozoa",
+    "Euryarchaeota",
+    "Firmicutes",
+    "Gemmatimonadetes",
+    "Nitrospirae",
+    "Ochrophyta",
+    "Opisthokonta",
+    "Proteobacteria",
+    "Rhizaria",
+    "Rhodophyta",
+    "Streptophyta",
+    "Stramenopiles",
+    "Thaumarchaeota",
+    "Unclassified",
+    "Unclassified Eukaryota",
+    "Unclassified Plantae",
+]
+
+# Keep only taxa in the custom order
+present_taxa = [taxon for taxon in custom_order if taxon in mothur_pivot.columns]
+
+# Plot Mothur (stacked)
+bottom = np.zeros(len(labels))
+for taxon in present_taxa:
+    heights = mothur_pivot[taxon].values
+    ax.bar(positions_mothur, heights, bar_width, bottom=bottom, label=taxon if taxon not in bottom else "", color=taxon_colors[taxon])
+    bottom += heights
+
+# Plot DADA2 (stacked)
+bottom = np.zeros(len(labels))
+for taxon in present_taxa:
+    heights = dada2_pivot[taxon].values
+    ax.bar(positions_dada2, heights, bar_width, bottom=bottom, color=taxon_colors[taxon])
+    bottom += heights
+
+# Ticks and labels
+xticks_combined = [(m + d) / 2 for m, d in zip(positions_mothur, positions_dada2)]
+ax.set_xticks(xticks_combined)
+ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=12)
+ax.set_ylabel("Relative Abundance (%)")
+ax.set_xlabel("Sample")
+ax.set_title("Relative Abundance of 16S Bacterial Taxa by Sample (Mothur vs. DADA2)", fontsize=14)
+
+# Aesthetics
+ax.set_ylim(0, 100)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.legend(title="Taxon", bbox_to_anchor=(1.05, 1))
+ax.set_xlabel("")
+ax.set_ylabel("Relative Abundance (%)", fontsize=16)
+plt.tight_layout()
+plt.show()
