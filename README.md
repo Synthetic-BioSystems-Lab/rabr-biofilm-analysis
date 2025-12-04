@@ -26,6 +26,12 @@ RStudio files produce figures and csv files.
 # POPULATION ANALYSIS OF CYANOBACTERIA IN ROTATING ALGAL BIOFILM REACTORS
 
 ## List of files within Registry:
+### RawData
+Contains the raw datasets used in this project (CSV format).
+
+### Plots
+Contains the scripts used to generate figures, along with the exported figure files.
+
 ### 16SDADA2 Files
 #### DADA2
 A_DADA2.R R – Classifies the lab scale, CVWRF, greenhouse RABRs, and the trickling filter 16S sequences using DADA2.\
@@ -92,3 +98,6 @@ ITS.sh – Executable file that sends the ITS_fungi and ITS_euk batch files to t
 ITS.oligos – File that contains the ITS primers. Used by the ITS_fungi and ITS_euk batch files.\
 ITS_fungi.batch – Classifies the ITS sequences using mothur and Silva and PR2.\
 ITS_euk.batch – Classifies the ITS sequences using mothur and Silva and PR2.
+
+
+
